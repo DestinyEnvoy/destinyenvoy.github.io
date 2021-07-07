@@ -28,7 +28,7 @@
 <meta property="og:description" content="Warshall算法">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-03-18T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-07-07T08:37:12.874Z">
+<meta property="article:modified_time" content="2021-07-07T08:46:07.508Z">
 <meta property="article:author" content="Diracs">
 <meta property="article:tag" content="Math">
 <meta property="article:tag" content="算法">
@@ -265,7 +265,7 @@ mjx-container[display="true"] + br {
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E4%BC%A0%E9%80%92%E9%97%AD%E5%8C%85%E7%9A%84%E5%AE%9A%E4%B9%89%E6%B3%951"><span class="nav-text">1. 传递闭包的定义法1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90"><span class="nav-text">1.1. 原理分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E4%BC%AA%E4%BB%A3%E7%A0%81"><span class="nav-text">1.2. 伪代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="nav-text">1.3. 时间复杂度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-Matlab%E4%BB%A3%E7%A0%81"><span class="nav-text">1.4. Matlab代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%B2%83%E8%88%8D%E5%B0%94%E7%AE%97%E6%B3%95"><span class="nav-text">2. 沃舍尔算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90"><span class="nav-text">2.1. 原理分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E4%BC%AA%E4%BB%A3%E7%A0%81"><span class="nav-text">2.2. 伪代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="nav-text">2.3. 时间复杂度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-%E6%BA%90%E7%A0%81"><span class="nav-text">2.4. 源码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E6%80%BB%E7%BB%93"><span class="nav-text">3. 总结</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%A0%E9%80%92%E9%97%AD%E5%8C%85%E7%9A%84%E5%AE%9A%E4%B9%89%E6%B3%951"><span class="nav-text">1. 传递闭包的定义法1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90"><span class="nav-text">1.1. 原理分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%AA%E4%BB%A3%E7%A0%81"><span class="nav-text">1.2. 伪代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="nav-text">1.3. 时间复杂度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#matlab%E4%BB%A3%E7%A0%81"><span class="nav-text">1.4. Matlab代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B2%83%E8%88%8D%E5%B0%94%E7%AE%97%E6%B3%95"><span class="nav-text">2. 沃舍尔算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90-1"><span class="nav-text">2.1. 原理分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%AA%E4%BB%A3%E7%A0%81-1"><span class="nav-text">2.2. 伪代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6-1"><span class="nav-text">2.3. 时间复杂度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BA%90%E7%A0%81"><span class="nav-text">2.4. 源码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">3. 总结</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -372,7 +372,7 @@ mjx-container[display="true"] + br {
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-07-07 16:37:12" itemprop="dateModified" datetime="2021-07-07T16:37:12+08:00">2021-07-07</time>
+        <time title="修改时间：2021-07-07 16:46:07" itemprop="dateModified" datetime="2021-07-07T16:46:07+08:00">2021-07-07</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -392,14 +392,14 @@ mjx-container[display="true"] + br {
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>2.5k</span>
+      <span>2.8k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -412,65 +412,83 @@ mjx-container[display="true"] + br {
     
     <div class="post-body" itemprop="articleBody">
         <ul>
-<li>假设$R$是定义在集合$A$上的二元关系，$S$是$R$的<span class="exturl" data-url="aHR0cHM6Ly9iYWlrZS5iYWlkdS5jb20vaXRlbS8lRTQlQkMlQTAlRTklODAlOTIlRTklOTclQUQlRTUlOEMlODU=">传递闭包<i class="fa fa-external-link-alt"></i></span>.<ul>
-<li>Input：二元关系$R$的矩阵形式$M_R$</li>
-<li>Output: $R$对应的传递闭包$S$.</li>
+<li>假设<span class="math inline">\(R\)</span>是定义在集合<span class="math inline">\(A\)</span>上的二元关系，<span class="math inline">\(S\)</span>是<span class="math inline">\(R\)</span>的<span class="exturl" data-url="aHR0cHM6Ly9iYWlrZS5iYWlkdS5jb20vaXRlbS8lRTQlQkMlQTAlRTklODAlOTIlRTklOTclQUQlRTUlOEMlODU=">传递闭包<i class="fa fa-external-link-alt"></i></span>.
+<ul>
+<li>Input：二元关系<span class="math inline">\(R\)</span>的矩阵形式<span class="math inline">\(M_R\)</span></li>
+<li>Output: <span class="math inline">\(R\)</span>对应的传递闭包<span class="math inline">\(S\)</span>.</li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<h1 id="1-传递闭包的定义法1"><a href="#1-传递闭包的定义法1" class="headerlink" title="1. 传递闭包的定义法1"></a>1. 传递闭包的定义法<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup></h1><h2 id="1-1-原理分析"><a href="#1-1-原理分析" class="headerlink" title="1.1. 原理分析"></a>1.1. 原理分析</h2><p>由传递闭包的定义可得$R^i\subset S$(这里的幂指数$i$表示$i$个二元关系的合成),<br>则有</p>
-<script type="math/tex; mode=display">
+<h1 id="传递闭包的定义法1">1. 传递闭包的定义法<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup></h1>
+<h2 id="原理分析">1.1. 原理分析</h2>
+<p>由传递闭包的定义可得<span class="math inline">\(R^i\subset S\)</span>(这里的幂指数<span class="math inline">\(i\)</span>表示<span class="math inline">\(i\)</span>个二元关系的合成), 则有</p>
+<p><span class="math display">\[
 \begin{equation}\label{eq1}
 S=\bigcup_{i=1}^{\infty}R^i
-\end{equation}</script><ul>
-<li>我们对$\eqref{eq1}$式继续进行分析，优化可得</li>
+\end{equation}
+\]</span></p>
+<ul>
+<li>我们对<span class="math inline">\(\eqref{eq1}\)</span>式继续进行分析，优化可得</li>
 </ul>
-<script type="math/tex; mode=display">
+<p><span class="math display">\[
 \begin{equation}
 S=\bigcup_{i=1}^nR^i\qquad\text{n是集合A的基数}\label{eq:2}
-\end{equation}</script><blockquote>
-<p>证明：</p>
+\end{equation}
+\]</span></p>
+<blockquote>
+<p>证明： - 设<span class="math inline">\((x,y)\in S\)</span>,则必存在一个最小的正整数<span class="math inline">\(p\)</span>使得<span class="math inline">\((x,y)\in R^p\)</span>，这就是说存在一个序列<span class="math inline">\(x,a_1,a_2,a_3,⋯,a_{p−1},y\)</span> - 使得<span class="math inline">\((x,a_1 )\in R,\ (a_1,a_2 )\in R,\ (a_2,a_3 )\in R,\cdots，(a_{p−1},y)\in R\)</span>,那么<span class="math inline">\(a_1\)</span> 到<span class="math inline">\(a_{p−1}\)</span>必须互不相同且不同于<span class="math inline">\(x\)</span>和<span class="math inline">\(y\)</span>，否则关系复合的链条就会缩短，从而与<span class="math inline">\(p\)</span>的最小性矛盾 - 因此<span class="math inline">\(p\)</span>的最大可能值出现在<span class="math inline">\(x=y\)</span>,而<span class="math inline">\(p−1=n−1\)</span>,故得证<span class="math inline">\(p\le n\)</span>,即<span class="math inline">\(S=\bigcup\limits_{i=1}^nR^i\)</span>⁡</p>
+</blockquote>
+<p><span class="math inline">\(\eqref{eq:2}\)</span>式用矩阵的形式表示为</p>
+<p><span class="math display">\[
+M_s=M_R\lor M_R^{[2]}\lor M_R^{[3]}\cdots\lor M_{R}^{[n]}
+\]</span></p>
+<p><strong>其中,<span class="math inline">\(M_R^{[i]}\)</span>表示<span class="math inline">\(i\)</span>个<span class="math inline">\(0-1\)</span>矩阵<span class="math inline">\(M_R\)</span>的布尔积</strong></p>
+<h2 id="伪代码">1.2. 伪代码</h2>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">procedure transitive closure</span><br><span class="line">A:&#x3D;M_R</span><br><span class="line">S:&#x3D;A</span><br><span class="line">for i:&#x3D;2 to n</span><br><span class="line">    A:&#x3D;A*M_R;(这里的*表示逻辑积)</span><br><span class="line">    S:&#x3D;S V A</span><br><span class="line">return S</span><br></pre></td></tr></table></figure>
+<h2 id="时间复杂度">1.3. 时间复杂度</h2>
 <ul>
-<li>设$(x,y)\in S$,则必存在一个最小的正整数$p$使得$(x,y)\in R^p$，这就是说存在一个序列$x,a<em>1,a_2,a_3,⋯,a</em>{p−1},y$</li>
-<li>使得$(x,a<em>1 )\in R,\ (a_1,a_2 )\in R,\ (a_2,a_3 )\in R,\cdots，(a</em>{p−1},y)\in R$,那么$a<em>1$ 到$a</em>{p−1}$必须互不相同且不同于$x$和$y$，否则关系复合的链条就会缩短，从而与$p$的最小性矛盾</li>
-<li>因此$p$的最大可能值出现在$x=y$,而$p−1=n−1$,故得证$p\le n$,即$S=\bigcup\limits_{i=1}^nR^i$⁡</li>
+<li>最后一步需要算<span class="math inline">\(n-1\)</span>个<span class="math inline">\(M_R^{[i]}\)</span>的并，计算每一个并运算需要使用<span class="math inline">\(n^2\)</span>次并运算</li>
+<li>计算布尔幂<span class="math inline">\(M_R^{[i]}\)</span>需要求出<span class="math inline">\(n-1\)</span>个<span class="math inline">\(n\times n\)</span>矩阵的布尔积。计算每个布尔积需要使用<span class="math inline">\(n^2(2n-1)\)</span>次位运算。因此此步共需要<span class="math inline">\(n^2(2n-1)(n-1)\)</span>次位运算</li>
+<li>总共需要<span class="math inline">\(n^2(2n-1)(n-1)+(n-1)n^2=2n^3(n-1)\)</span>，即该算法的时间复杂度为<span class="math inline">\(O(n^4)\)</span></li>
 </ul>
-</blockquote>
-<p>$\eqref{eq:2}$式用矩阵的形式表示为</p>
-<script type="math/tex; mode=display">
-M_s=M_R\lor M_R^{[2]}\lor M_R^{[3]}\cdots\lor M_{R}^{[n]}</script><p><strong>其中,$M_R^{[i]}$表示$i$个$0-1$矩阵$M_R$的布尔积</strong></p>
-<h2 id="1-2-伪代码"><a href="#1-2-伪代码" class="headerlink" title="1.2. 伪代码"></a>1.2. 伪代码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">procedure transitive closure</span><br><span class="line">A:&#x3D;M_R</span><br><span class="line">S:&#x3D;A</span><br><span class="line">for i:&#x3D;2 to n</span><br><span class="line">    A:&#x3D;A*M_R;(这里的*表示逻辑积)</span><br><span class="line">    S:&#x3D;S V A</span><br><span class="line">return S</span><br></pre></td></tr></table></figure>
-<h2 id="1-3-时间复杂度"><a href="#1-3-时间复杂度" class="headerlink" title="1.3. 时间复杂度"></a>1.3. 时间复杂度</h2><ul>
-<li>最后一步需要算$n-1$个$M_R^{[i]}$的并，计算每一个并运算需要使用$n^2$次并运算</li>
-<li>计算布尔幂$M_R^{[i]}$需要求出$n-1$个$n\times n$矩阵的布尔积。计算每个布尔积需要使用$n^2(2n-1)$次位运算。因此此步共需要$n^2(2n-1)(n-1)$次位运算</li>
-<li>总共需要$n^2(2n-1)(n-1)+(n-1)n^2=2n^3(n-1)$，即该算法的时间复杂度为$O(n^4)$</li>
-</ul>
-<h2 id="1-4-Matlab代码"><a href="#1-4-Matlab代码" class="headerlink" title="1.4. Matlab代码"></a>1.4. Matlab代码</h2><p><strong>注</strong>：Matlab可以进行<span class="exturl" data-url="aHR0cHM6Ly93dzIubWF0aHdvcmtzLmNuL2hlbHAvbWF0bGFiL21hdGxhYl9wcm9nL3ZlY3Rvcml6YXRpb24uaHRtbA==">向量化运算<i class="fa fa-external-link-alt"></i></span>，因此实际运行时间会小于$O(n^4)$</p>
+<h2 id="matlab代码">1.4. Matlab代码</h2>
+<p><strong>注</strong>：Matlab可以进行<span class="exturl" data-url="aHR0cHM6Ly93dzIubWF0aHdvcmtzLmNuL2hlbHAvbWF0bGFiL21hdGxhYl9wcm9nL3ZlY3Rvcml6YXRpb24uaHRtbA==">向量化运算<i class="fa fa-external-link-alt"></i></span>，因此实际运行时间会小于<span class="math inline">\(O(n^4)\)</span></p>
 <figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">% main function </span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Ms</span>=<span class="title">closure</span><span class="params">(Mr)</span></span></span><br><span class="line"><span class="comment">% get the size of Matrix inputed</span></span><br><span class="line">n=<span class="built_in">size</span>(Mr);</span><br><span class="line">temp=<span class="built_in">zeros</span>(n);</span><br><span class="line">Ms=Mr;</span><br><span class="line"><span class="comment">% init</span></span><br><span class="line">Mrk=Mr;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> k=<span class="number">2</span>:n</span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>:n</span><br><span class="line">        <span class="keyword">for</span> <span class="built_in">j</span>=<span class="number">1</span>:n</span><br><span class="line"><span class="comment">%             vectorize to speed up a little</span></span><br><span class="line">            temp(<span class="built_in">i</span>,<span class="built_in">j</span>)=log_sum(Mrk(<span class="built_in">i</span>, : )&amp;Mrk(: ,<span class="built_in">j</span>)&#x27;);</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    Mrk=temp;</span><br><span class="line">    Ms=Ms|Mrk;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ls</span>=<span class="title">log_sum</span><span class="params">(t)</span></span></span><br><span class="line">    nn=<span class="built_in">length</span>(t);</span><br><span class="line">    ls=t(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">2</span>:nn</span><br><span class="line">        ls=ls|t(<span class="built_in">i</span>);</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
-<h1 id="2-沃舍尔算法"><a href="#2-沃舍尔算法" class="headerlink" title="2. 沃舍尔算法"></a>2. 沃舍尔算法</h1><p>这个算法能够高效地计算某个二元关系的传递闭包</p>
-<h2 id="2-1-原理分析"><a href="#2-1-原理分析" class="headerlink" title="2.1. 原理分析"></a>2.1. 原理分析</h2><ul>
-<li>其基础是构造一系列的$0-1$矩阵。这些矩阵是$W<em>0,W_1,W_2,\cdots,W_n$，其中$W_0=M_r$,且$W_k=[w</em>{ij}^{(k)}]$（此处类似于迭代）。$A={v_1,v_2,\cdots,v_n}$。</li>
-<li>如果存在一条从$v<em>i$到$v_j$的路径使得这条路径的内点在集合$A$内（就是找到一个点$v_k$使得$w</em>{ik}=1$且$w<em>{kj}=1$，即存在路径$v_i\rightarrow v_k\rightarrow v_j$,有点类似与Floyd算法），则记$w</em>{ij}^{(k)}=1$</li>
-<li>$W_n$就是所要求的$S$</li>
+<h1 id="沃舍尔算法">2. 沃舍尔算法</h1>
+<p>这个算法能够高效地计算某个二元关系的传递闭包</p>
+<h2 id="原理分析-1">2.1. 原理分析</h2>
+<ul>
+<li>其基础是构造一系列的<span class="math inline">\(0-1\)</span>矩阵。这些矩阵是<span class="math inline">\(W_0,W_1,W_2,\cdots,W_n\)</span>，其中<span class="math inline">\(W_0=M_r\)</span>,且<span class="math inline">\(W_k=[w_{ij}^{(k)}]\)</span>（此处类似于迭代）。<span class="math inline">\(A=\{v_1,v_2,\cdots,v_n\}\)</span>。</li>
+<li>如果存在一条从<span class="math inline">\(v_i\)</span>到<span class="math inline">\(v_j\)</span>的路径使得这条路径的内点在集合<span class="math inline">\(A\)</span>内（就是找到一个点<span class="math inline">\(v_k\)</span>使得<span class="math inline">\(w_{ik}=1\)</span>且<span class="math inline">\(w_{kj}=1\)</span>，即存在路径<span class="math inline">\(v_i\rightarrow v_k\rightarrow v_j\)</span>,有点类似与Floyd算法），则记<span class="math inline">\(w_{ij}^{(k)}=1\)</span></li>
+<li><span class="math inline">\(W_n\)</span>就是所要求的<span class="math inline">\(S\)</span></li>
 <li>以上是大致的思路。</li>
-<li>补充一个引理：<blockquote>
-<p>设$W<em>k=[w</em>{ij}^{(k)}]$是$0-1$矩阵，它在$(i,j)$位置处取1当且仅当存在一条从$v<em>{i}$到$v</em>{j}$的路径，其内部顶点取值集合$A$,数学语言描述为</p>
-<script type="math/tex; mode=display">w_{ij}^{(k)}=w_{ij}^{(k-1)}\lor(w_{ik}^{(k-1)}\land w_{kj}^{(k-1)})</script><p>且有$i,j,k\le n$</p>
-</blockquote>
-</li>
+<li>补充一个引理： &gt;设<span class="math inline">\(W_k=[w_{ij}^{(k)}]\)</span>是<span class="math inline">\(0-1\)</span>矩阵，它在<span class="math inline">\((i,j)\)</span>位置处取1当且仅当存在一条从<span class="math inline">\(v_{i}\)</span>到<span class="math inline">\(v_{j}\)</span>的路径，其内部顶点取值集合<span class="math inline">\(A\)</span>,数学语言描述为 &gt; &gt;<span class="math display">\[w_{ij}^{(k)}=w_{ij}^{(k-1)}\lor(w_{ik}^{(k-1)}\land w_{kj}^{(k-1)})\]</span> &gt;且有<span class="math inline">\(i,j,k\le n\)</span> &gt;</li>
 </ul>
-<h2 id="2-2-伪代码"><a href="#2-2-伪代码" class="headerlink" title="2.2. 伪代码"></a>2.2. 伪代码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">procedure Warshall</span><br><span class="line">W:&#x3D;M_R</span><br><span class="line">B:&#x3D;A</span><br><span class="line">for k:&#x3D;1 to n</span><br><span class="line">    for i:&#x3D;1 to n</span><br><span class="line">        for j:&#x3D;1 to n</span><br><span class="line">        w_&#123;ij&#125;&#x3D;w_&#123;ij&#125;|(w_&#123;ik&#125;&amp;w_&#123;kj&#125;)</span><br><span class="line">return W</span><br></pre></td></tr></table></figure>
-<h2 id="2-3-时间复杂度"><a href="#2-3-时间复杂度" class="headerlink" title="2.3. 时间复杂度"></a>2.3. 时间复杂度</h2><ul>
-<li>求出一项$w<em>{ij}^{(k)}$需要两次位运算，从$W</em>{k-1}$计算$W_{k}$需要$2n^2$次运算</li>
-<li>从$W_0$计算出$W_1,W_2$一直到$W_n$需要$n$次运算</li>
-<li>则共需$2n^2\times n=2n^3$次运算，时间的复杂度$O(n^3)$</li>
+<h2 id="伪代码-1">2.2. 伪代码</h2>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">procedure Warshall</span><br><span class="line">W:&#x3D;M_R</span><br><span class="line">B:&#x3D;A</span><br><span class="line">for k:&#x3D;1 to n</span><br><span class="line">    for i:&#x3D;1 to n</span><br><span class="line">        for j:&#x3D;1 to n</span><br><span class="line">        w_&#123;ij&#125;&#x3D;w_&#123;ij&#125;|(w_&#123;ik&#125;&amp;w_&#123;kj&#125;)</span><br><span class="line">return W</span><br></pre></td></tr></table></figure>
+<h2 id="时间复杂度-1">2.3. 时间复杂度</h2>
+<ul>
+<li>求出一项<span class="math inline">\(w_{ij}^{(k)}\)</span>需要两次位运算，从<span class="math inline">\(W_{k-1}\)</span>计算<span class="math inline">\(W_{k}\)</span>需要<span class="math inline">\(2n^2\)</span>次运算</li>
+<li>从<span class="math inline">\(W_0\)</span>计算出<span class="math inline">\(W_1,W_2\)</span>一直到<span class="math inline">\(W_n\)</span>需要<span class="math inline">\(n\)</span>次运算</li>
+<li>则共需<span class="math inline">\(2n^2\times n=2n^3\)</span>次运算，时间的复杂度<span class="math inline">\(O(n^3)\)</span></li>
 </ul>
-<h2 id="2-4-源码"><a href="#2-4-源码" class="headerlink" title="2.4. 源码"></a>2.4. 源码</h2><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">% main function </span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">W</span>=<span class="title">Warshall</span><span class="params">(Mr)</span></span></span><br><span class="line"><span class="comment">% get the size of Matrix inputed</span></span><br><span class="line">n=<span class="built_in">size</span>(Mr);</span><br><span class="line">temp=<span class="number">0</span>;</span><br><span class="line">W=Mr;</span><br><span class="line"><span class="comment">% init</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> k=<span class="number">1</span>:n</span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>:n</span><br><span class="line">        <span class="keyword">for</span> <span class="built_in">j</span>=<span class="number">1</span>:n             </span><br><span class="line">            temp=W(<span class="built_in">i</span>,<span class="built_in">j</span>)|(W(<span class="built_in">i</span>,k)&amp;W(k,<span class="built_in">j</span>));</span><br><span class="line">            W(<span class="built_in">i</span>,<span class="built_in">j</span>)=temp;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
-<h1 id="3-总结"><a href="#3-总结" class="headerlink" title="3. 总结"></a>3. 总结</h1><ul>
+<h2 id="源码">2.4. 源码</h2>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">% main function </span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">W</span>=<span class="title">Warshall</span><span class="params">(Mr)</span></span></span><br><span class="line"><span class="comment">% get the size of Matrix inputed</span></span><br><span class="line">n=<span class="built_in">size</span>(Mr);</span><br><span class="line">temp=<span class="number">0</span>;</span><br><span class="line">W=Mr;</span><br><span class="line"><span class="comment">% init</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> k=<span class="number">1</span>:n</span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>:n</span><br><span class="line">        <span class="keyword">for</span> <span class="built_in">j</span>=<span class="number">1</span>:n             </span><br><span class="line">            temp=W(<span class="built_in">i</span>,<span class="built_in">j</span>)|(W(<span class="built_in">i</span>,k)&amp;W(k,<span class="built_in">j</span>));</span><br><span class="line">            W(<span class="built_in">i</span>,<span class="built_in">j</span>)=temp;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<h1 id="总结">3. 总结</h1>
+<ul>
 <li>就串行运算的话，第二种算法的时间复杂度比第一种低一个量级,算法高效</li>
 <li>但是第一种算法可以进行并行处理，会大大提高速度</li>
 </ul>
-<div id="footnotes"><hr><div id="footnotelist"><ol style="list-style:none; padding-left: 0;"><li id="fn:1"><span style="display: inline-block; vertical-align: top; padding-right: 10px;">1.</span><span style="display: inline-block; vertical-align: top;">离散数学及其应用_第七版。ROSEN著.徐六通等译</span><a href="#fnref:1" rev="footnote"> ↩</a></li></ol></div></div>
+<div id="footnotes">
+<hr>
+<div id="footnotelist">
+<ol style="list-style:none; padding-left: 0;">
+<li id="fn:1">
+<span style="display: inline-block; vertical-align: top; padding-right: 10px;">1.</span><span style="display: inline-block; vertical-align: top;">离散数学及其应用_第七版。ROSEN著.徐六通等译</span><a href="#fnref:1" rev="footnote"> ↩︎</a>
+</li>
+</ol>
+</div>
+</div>
+
     </div>
 
     
@@ -535,7 +553,7 @@ M_s=M_R\lor M_R^{[2]}\lor M_R^{[3]}\cdots\lor M_{R}^{[n]}</script><p><strong>其
       <i class="fa fa-coffee"></i>
     </span>
       <span>站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">26 分钟</span>
+    <span title="站点阅读时长">27 分钟</span>
   </span>
 </div>
 
