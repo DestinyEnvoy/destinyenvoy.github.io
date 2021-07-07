@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","version":"8.6.1","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="笔者采用的环境为Windows 10+gvim+TeXLive2020 本文主要参考VimTeX的使用说明vimtex.txt 在此，向VimTeX的开发者lervag致以谢意，感谢他开发维护了如此amazing的插件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vim+vimtex:带给你飞一般的LaTeX编辑体验">
+<meta property="og:url" content="http://example.com/2020/09/07/how-to-use-vimtex/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="笔者采用的环境为Windows 10+gvim+TeXLive2020 本文主要参考VimTeX的使用说明vimtex.txt 在此，向VimTeX的开发者lervag致以谢意，感谢他开发维护了如此amazing的插件">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1599484720_20200907202712751_2015.png">
+<meta property="og:image" content="https://pic4.zhimg.com/v2-20d0be8d1e39e7178f4c28dd1f62ee85_r.jpg">
+<meta property="article:published_time" content="2020-09-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-02-10T02:37:55.714Z">
+<meta property="article:author" content="Diracs">
+<meta property="article:tag" content="LaTeX">
+<meta property="article:tag" content="Vim">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1599484720_20200907202712751_2015.png">
+
+
+<link rel="canonical" href="http://example.com/2020/09/07/how-to-use-vimtex/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2020/09/07/how-to-use-vimtex/","path":"2020/09/07/how-to-use-vimtex/","title":"vim+vimtex:带给你飞一般的LaTeX编辑体验"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>vim+vimtex:带给你飞一般的LaTeX编辑体验 | Hexo</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"] > svg a {
+  fill: blue;
+  stroke: blue;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Hexo</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">13</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">8</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFvimtex1"><span class="nav-text">1. 什么是VimTeX1</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-text">2. 安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%80%E5%A7%8B%E4%BD%A0%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="nav-text">3. 开始你的配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hello-world"><span class="nav-text">4. Hello World</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%94%A8%E6%B3%95"><span class="nav-text">5. 用法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95"><span class="nav-text">5.1. 基本用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#imaps%E6%98%A0%E5%B0%844"><span class="nav-text">5.2. imaps映射4</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97%E7%BC%96%E8%BE%91"><span class="nav-text">5.3. 模块编辑</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#vimtex%E7%9A%84%E5%93%B2%E5%AD%A6"><span class="nav-text">6. vimtex的哲学</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%9B%E9%98%B6%E6%93%8D%E4%BD%9C"><span class="nav-text">7. 进阶操作</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Diracs</p>
+  <div class="site-description" itemprop="description">欲上青天揽明月</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Rlc3RpbnllbnZveQ==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;destinyenvoy"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtvZHVudWxsQGdtYWlsLmNvbQ==" title="E-Mail → mailto:kodunull@gmail.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+
+          </div>
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/07/how-to-use-vimtex/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Diracs">
+      <meta itemprop="description" content="欲上青天揽明月">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          vim+vimtex:带给你飞一般的LaTeX编辑体验
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-09-07 00:00:00" itemprop="dateCreated datePublished" datetime="2020-09-07T00:00:00+08:00">2020-09-07</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-02-10 10:37:55" itemprop="dateModified" datetime="2021-02-10T10:37:55+08:00">2021-02-10</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/LaTeX%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">LaTeX学习</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<ul>
+<li>笔者采用的环境为Windows 10+<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3ZpbS92aW0td2luMzItaW5zdGFsbGVyL3JlbGVhc2Vz">gvim<i class="fa fa-external-link-alt"></i></span>+<a href="">TeXLive2020</a></li>
+<li>本文主要参考VimTeX的使用说明<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xlcnZhZy92aW10ZXgvYmxvYi9tYXN0ZXIvZG9jL3ZpbXRleC50eHQ=">vimtex.txt<i class="fa fa-external-link-alt"></i></span></li>
+<li>在此，向VimTeX的开发者<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xlcnZhZw==">lervag<i class="fa fa-external-link-alt"></i></span>致以谢意，感谢他开发维护了如此amazing的插件</li>
+</ul>
+</blockquote>
+<a id="more"></a>
+<h1 id="什么是vimtex1">1. 什么是VimTeX<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup></h1>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xlcnZhZy92aW10ZXg=">vimtex<i class="fa fa-external-link-alt"></i></span>是一款现代化的vim/gvim<strong>编辑器插件</strong>，方便LaTeX用户在vim编辑器下编辑，编译LaTeX文件，生成pdf文件。</li>
+<li>特性
+<ul>
+<li>它最大的特点就是<strong>增加</strong>了vim/gvim对LaTeX文件的编译支持（一定程度上也简化了一些编译操作），使得我们不需要用命令行来编译tex源文件</li>
+<li>提供了一系列LaTeX文件的编译方式(latexrun,latexmk 等 )的支持，内置了一些快捷键映射，当然也可以自行配置编译方式</li>
+<li>支持tex语法高亮, 提供pdf阅读器的接口（如可以调用sumatra pdf阅读器预览生成的latex文件）。</li>
+<li>支持pdf文件的反向搜索（反向搜索源代码），精确到行</li>
+<li>支持部分文件编译：选中某个tex文件的完整片段，只编译选中的代码片段，方便用户调试latex code</li>
+<li>统计tex文件中中西文字符的个数（其实是调用了TeXlive发行版中已经打包好的texcount脚本）</li>
+<li>支持在每个section之中快速跳转</li>
+<li>一些有用的映射，如<code>tsf</code> 将光标处分式在横排分式和竖排分式之间切换;<code>cse</code>改变光标周围的环境名称;<code>]]</code>自动补全右括号或环境名...(这个可以帮助我们完成括号匹配)</li>
+<li>...</li>
+</ul></li>
+</ul>
+<h1 id="安装">2. 安装</h1>
+<p>如果您采用<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2p1bmVndW5uL3ZpbS1wbHVn">vim-plug<i class="fa fa-external-link-alt"></i></span>管理vim插件，直接在<code>.vimrc</code>文件中添加</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Plug 'lervag/vimtex'</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>然后normal模式下运行<code>:PlugInstall</code>即可安装成功</li>
+</ul>
+<h1 id="开始你的配置">3. 开始你的配置</h1>
+<ul>
+<li><p>我采用的是<code>latexmk</code>管理我的tex文件编译+<span class="exturl" data-url="aHR0cHM6Ly93d3cuc3VtYXRyYXBkZnJlYWRlci5vcmcvZnJlZS1wZGYtcmVhZGVyLmh0bWw=">Sumatra PDF<i class="fa fa-external-link-alt"></i></span>预览pdf编译结果</p></li>
+<li><p>在此贴上我的vimrc配置文件<sup id="fnref:2"><a href="#fn:2" rel="footnote">2</a></sup><sup id="fnref:3"><a href="#fn:3" rel="footnote">3</a></sup>： <strong>Note</strong>:（<code>E:\Latex\SumatraPDF\SumatraPDF.exe</code>需要根据你的sumatra安装路径进行更改）</p></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">"LaTeX配置</span><br><span class="line">let g:tex_flavor='latex'</span><br><span class="line">let g:vimtex_texcount_custom_arg=' -ch -total'</span><br><span class="line">"映射VimtexCountWords！\lw 在命令模式下enter此命令可统计中英文字符的个数</span><br><span class="line">au FileType tex map &lt;buffer&gt; &lt;silent&gt;  &lt;leader&gt;lw :VimtexCountWords!  &lt;CR&gt;&lt;CR&gt;</span><br><span class="line">let g:Tex_ViewRule_pdf = 'E:\Latex\SumatraPDF\SumatraPDF.exe -reuse-instance -inverse-search "gvim -c \":RemoteOpen +\%l \%f\""'</span><br><span class="line"></span><br><span class="line">"这里是LaTeX编译引擎的设置，这里默认LaTeX编译方式为-pdf(pdfLaTeX),</span><br><span class="line">"vimtex提供了magic comments来为文件设置编译方式</span><br><span class="line">"例如，我在tex文件开头输入 % !TEX program = xelatex   即指定-xelatex （xelatex）编译文件</span><br><span class="line">let g:vimtex_compiler_latexmk_engines = {</span><br><span class="line">    \ '_'                : '-pdf',</span><br><span class="line">    \ 'pdflatex'         : '-pdf',</span><br><span class="line">    \ 'dvipdfex'         : '-pdfdvi',</span><br><span class="line">    \ 'lualatex'         : '-lualatex',</span><br><span class="line">    \ 'xelatex'          : '-xelatex',</span><br><span class="line">    \ 'context (pdftex)' : '-pdf -pdflatex=texexec',</span><br><span class="line">    \ 'context (luatex)' : '-pdf -pdflatex=context',</span><br><span class="line">    \ 'context (xetex)'  : '-pdf -pdflatex=''texexec --xtx''',</span><br><span class="line">    \}</span><br><span class="line">"这里是设置latexmk工具的可选参数</span><br><span class="line">let g:vimtex_compiler_latexmk = {</span><br><span class="line">    \ 'build_dir' : '',</span><br><span class="line">    \ 'callback' : 1,</span><br><span class="line">    \ 'continuous' : 1,</span><br><span class="line">    \ 'executable' : 'latexmk',</span><br><span class="line">    \ 'hooks' : [],</span><br><span class="line">    \ 'options' : [</span><br><span class="line">    \   '-verbose',</span><br><span class="line">    \   '-file-line-error',</span><br><span class="line">    \   '-shell-escape',</span><br><span class="line">    \   '-synctex=1',</span><br><span class="line">    \   '-interaction=nonstopmode',</span><br><span class="line">    \ ],</span><br><span class="line">    \}</span><br><span class="line"></span><br><span class="line">" 阅读器相关的配置 包含正反向查找功能 仅供参考</span><br><span class="line">let g:vimtex_view_general_viewer = 'E:\LaTeX\SumatraPDF\SumatraPDF.exe' "这里放置你的sumatrapdf 安装路径</span><br><span class="line">let g:vimtex_view_general_options_latexmk = '-reuse-instance'</span><br><span class="line">let g:vimtex_view_general_options</span><br><span class="line">\ = '-reuse-instance -forward-search @tex @line @pdf'</span><br><span class="line">\ . ' -inverse-search "' . exepath(v:progpath)</span><br><span class="line">\ . ' --servername ' . v:servername</span><br><span class="line">\ . ' --remote-send \"^&lt;C-\^&gt;^&lt;C-n^&gt;'</span><br><span class="line">\ . ':execute ''drop '' . fnameescape(''\%f'')^&lt;CR^&gt;'</span><br><span class="line">\ . ':\%l^&lt;CR^&gt;:normal\! zzzv^&lt;CR^&gt;'</span><br><span class="line">\ . ':call remote_foreground('''.v:servername.''')^&lt;CR^&gt;^&lt;CR^&gt;\""'</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">"编译过程中忽略警告信息</span><br><span class="line">let g:vimtex_quickfix_open_on_warning=0</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="hello-world">4. Hello World</h1>
+<p>用vim/gvim打开一个文件，然后输入 <figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">% !TEX program = xelatex</span></span><br><span class="line"><span class="keyword">\documentclass</span>{atricle}</span><br><span class="line"><span class="keyword">\usepackage</span>{ctex}</span><br><span class="line"><span class="keyword">\begin</span>{document}</span><br><span class="line">    Hello,LaTeX{} World！</span><br><span class="line"></span><br><span class="line">    你好，世界！</span><br><span class="line"><span class="keyword">\end</span>{document}</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li><p>然后,<code>&lt;esc&gt;</code>进入normal模式，<code>:w</code>保存，输入<code>\ll</code>等待一小会，就可得到一个perfect的pdf文档</p></li>
+<li><p><strong>Note</strong>:由于latexmk的特性（一旦检测到tex源文件或者相关文件的更改，就可自动编译的）。也就是说，后续修改文件，添加文字，我们只要<code>:w</code>保存， 之后等待vim状态栏下方回显出<code>vimtex: Compilation completed</code>字样，接着输入<code>\lv</code>就可查看更新后的pdf文档。</p></li>
+</ul>
+<h1 id="用法">5. 用法</h1>
+<h2 id="基本用法">5.1. 基本用法</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">按键</th>
+<th style="text-align: center;">效果</th>
+<th style="text-align: center;">工作模式</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><code>\li</code></td>
+<td style="text-align: center;">vimtex-info(文件信息)</td>
+<td style="text-align: center;">n</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>\lt</code></td>
+<td style="text-align: center;">vimtex-toc-open(打开目录)</td>
+<td style="text-align: center;">n</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>\ll</code></td>
+<td style="text-align: center;">vimtex-compile(编译文件)</td>
+<td style="text-align: center;">n</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>\lv</code></td>
+<td style="text-align: center;">vimtex-view(查看pdf文档)</td>
+<td style="text-align: center;">n</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><code>\li</code></td>
+<td style="text-align: center;">vimtex-imap-list(查看insert 模式下已定义的映射)</td>
+<td style="text-align: center;">n</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><code>K</code></td>
+<td style="text-align: center;">vim-doc-package(查看宏包信息)</td>
+<td style="text-align: center;">n</td>
+</tr>
+</tbody>
+</table>
+<h2 id="imaps映射4">5.2. imaps映射<sup id="fnref:4"><a href="#fn:4" rel="footnote">4</a></sup></h2>
+<figure>
+<img src="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1599484720_20200907202712751_2015.png" alt="imaps映射"><figcaption aria-hidden="true">imaps映射</figcaption>
+</figure>
+<ul>
+<li>举例来说, 如果你想输入 <span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.025ex" xmlns="http://www.w3.org/2000/svg" width="2.262ex" height="1.025ex" role="img" focusable="false" viewBox="0 -442 1000 453"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="221E" d="M55 217Q55 305 111 373T254 442Q342 442 419 381Q457 350 493 303L507 284L514 294Q618 442 747 442Q833 442 888 374T944 214Q944 128 889 59T743 -11Q657 -11 580 50Q542 81 506 128L492 147L485 137Q381 -11 252 -11Q166 -11 111 57T55 217ZM907 217Q907 285 869 341T761 397Q740 397 720 392T682 378T648 359T619 335T594 310T574 285T559 263T548 246L543 238L574 198Q605 158 622 138T664 94T714 61T765 51Q827 51 867 100T907 217ZM92 214Q92 145 131 89T239 33Q357 33 456 193L425 233Q364 312 334 337Q285 380 233 380Q171 380 132 331T92 214Z"></path></g></g></g></svg></mjx-container></span>, 那么在插入模式下，只需要输入 <code>+ 8</code> 就行了 (因为8躺下了就是 <span class="math inline"><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.025ex" xmlns="http://www.w3.org/2000/svg" width="2.262ex" height="1.025ex" role="img" focusable="false" viewBox="0 -442 1000 453"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="221E" d="M55 217Q55 305 111 373T254 442Q342 442 419 381Q457 350 493 303L507 284L514 294Q618 442 747 442Q833 442 888 374T944 214Q944 128 889 59T743 -11Q657 -11 580 50Q542 81 506 128L492 147L485 137Q381 -11 252 -11Q166 -11 111 57T55 217ZM907 217Q907 285 869 341T761 397Q740 397 720 392T682 378T648 359T619 335T594 310T574 285T559 263T548 246L543 238L574 198Q605 158 622 138T664 94T714 61T765 51Q827 51 867 100T907 217ZM92 214Q92 145 131 89T239 33Q357 33 456 193L425 233Q364 312 334 337Q285 380 233 380Q171 380 132 331T92 214Z"></path></g></g></g></svg></mjx-container></span></li>
+</ul>
+<h2 id="模块编辑">5.3. 模块编辑</h2>
+<p><img src="https://pic4.zhimg.com/v2-20d0be8d1e39e7178f4c28dd1f62ee85_r.jpg"></p>
+<ul>
+<li><code>cse</code>:change surrounding environment 比如在一个 <code>align</code>周围（注意是将<strong>光标调整到align周围或环境内部</strong>），我们按下按键<code>cse</code>,在命令行就会出现</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Change surrounding environment:align</span><br><span class="line">&gt;[光标]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>的提示，然后我们在光标处输入equation，那么这个环境就会变成 <figure class="highlight latex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">\begin</span>{equation}</span><br><span class="line">...</span><br><span class="line"><span class="keyword">\end</span>{equation}</span><br></pre></td></tr></table></figure></p>
+<hr>
+<ul>
+<li><code>tsd</code>:toggle surrounding delimiter,互换括号，这个命令经常被用到
+<ul>
+<li><code>(..光标..)</code>与<code>\left(..光标\right..)</code>之间切换</li>
+<li><code>[..光标..]</code>与<code>\left[..光标..\right]</code></li>
+<li><code>\{..光标..\}</code>与<code>\left\{..光标..\right\}</code></li>
+</ul></li>
+</ul>
+<hr>
+<ul>
+<li><code>]]</code>,自动补全右括号，右环境.<code>%</code>自动配对光标处的另一个括号 如</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">({[78光标</span><br><span class="line">-一次]]-&gt;({[78]光标</span><br><span class="line">-2]]-&gt;({[78]}光标</span><br><span class="line">....................</span><br><span class="line">\begin{equation}</span><br><span class="line">a^2+b^2=c^2</span><br><span class="line">光标</span><br><span class="line">-]]-&gt;</span><br><span class="line">\begin{equation}</span><br><span class="line">a^2+b^2=c^2</span><br><span class="line">\end{equation}光标</span><br></pre></td></tr></table></figure>
+<hr>
+<ul>
+<li>常用的<code>textobj</code>模块，这些可以和<code>y</code>(复制),<code>d</code>(删除)及<code>c</code>(修改)搭配使用(详情请查看<sup id="fnref:5"><a href="#fn:5" rel="footnote">5</a></sup>)</li>
+<li><code>ic</code>,<code>ac</code>：Text object for commands</li>
+<li><code>id</code>,<code>ad</code>:Text object for delimiters</li>
+<li><code>ae</code>,<code>ie</code>:Text object for environments</li>
+<li><code>a$</code>,<code>i$</code>:Text object for inline math</li>
+<li>... 如： <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">..(78787光标8ui)..</span><br><span class="line">-di(--&gt;(光标)</span><br><span class="line">.........</span><br><span class="line">..(78787光标8ui)..</span><br><span class="line">-da(--&gt;..光标..</span><br></pre></td></tr></table></figure> Note：<code>a.</code>包括文字两侧的环境，括号，$等，<code>i.</code>仅仅包括被包围起来的文字。</li>
+</ul>
+<hr>
+<h1 id="vimtex的哲学">6. vimtex的哲学</h1>
+<ul>
+<li>vimtex并不试图将vim变成一个完全的LaTeX IDLE（这样可能会拖慢vim/gvim的加载速度）
+<ul>
+<li>几乎不提供LaTeX片段支持，因为有更好的插件实现：<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL1NpclZlci91bHRpc25pcHM=">ultisnips<i class="fa fa-external-link-alt"></i></span>+<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2hvbnphL3ZpbS1zbmlwcGV0cw==">vim-snippets<i class="fa fa-external-link-alt"></i></span></li>
+<li>vimtex是模块化的，你可以选择关掉那些你不喜欢的功能（例如文件折叠）</li>
+</ul></li>
+</ul>
+<h1 id="进阶操作">7. 进阶操作</h1>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL1NpclZlci91bHRpc25pcHM=">ultisnips<i class="fa fa-external-link-alt"></i></span>+<span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2hvbnphL3ZpbS1zbmlwcGV0cw==">vim-snippets<i class="fa fa-external-link-alt"></i></span>可实现tex片段补全,以及编辑LaTeX文件的速度<sup id="fnref:6"><a href="#fn:6" rel="footnote">6</a></sup></li>
+<li>当然为了实现上面飞一般的操作, 也许你需要安装<code>python</code>环境以及<code>sympy</code>package</li>
+<li>后续，学习学习再补充</li>
+</ul>
+<div id="footnotes">
+<hr>
+<div id="footnotelist">
+<ol style="list-style:none; padding-left: 0;">
+<li id="fn:1">
+<span style="display: inline-block; vertical-align: top; padding-right: 10px;">1.</span><span style="display: inline-block; vertical-align: top;"><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xlcnZhZy92aW10ZXgvYmxvYi9tYXN0ZXIvUkVBRE1FLm1k">vimtex/README<i class="fa fa-external-link-alt"></i></span></span><a href="#fnref:1" rev="footnote"> ↩︎</a>
+</li>
+<li id="fn:2">
+<span style="display: inline-block; vertical-align: top; padding-right: 10px;">2.</span><span style="display: inline-block; vertical-align: top;"><span class="exturl" data-url="aHR0cHM6Ly9taXJyb3JzLmJmc3UuZWR1LmNuL0NUQU4vc3VwcG9ydC9sYXRleG1rL2xhdGV4bWsucGRm">latexmk.pdf<i class="fa fa-external-link-alt"></i></span></span><a href="#fnref:2" rev="footnote"> ↩︎</a>
+</li>
+<li id="fn:3">
+<span style="display: inline-block; vertical-align: top; padding-right: 10px;">3.</span><span style="display: inline-block; vertical-align: top;"><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xlcnZhZy92aW10ZXgvaXNzdWVzLzcxMw==">Is there any plan for the ``magic comments''<i class="fa fa-external-link-alt"></i></span></span><a href="#fnref:3" rev="footnote"> ↩︎</a>
+</li>
+<li id="fn:4">
+<span style="display: inline-block; vertical-align: top; padding-right: 10px;">4.</span><span style="display: inline-block; vertical-align: top;"><span class="exturl" data-url="aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC82NjUzNDI2OQ==">Vim Latex 的使用和配置技巧 (二)<i class="fa fa-external-link-alt"></i></span></span><a href="#fnref:4" rev="footnote"> ↩︎</a>
+</li>
+<li id="fn:5">
+<span style="display: inline-block; vertical-align: top; padding-right: 10px;">5.</span><span style="display: inline-block; vertical-align: top;"><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2xlcnZhZy92aW10ZXgvYmxvYi9tYXN0ZXIvZG9jL3ZpbXRleC50eHQ=">vimtex文档说明<i class="fa fa-external-link-alt"></i></span></span><a href="#fnref:5" rev="footnote"> ↩︎</a>
+</li>
+<li id="fn:6">
+<span style="display: inline-block; vertical-align: top; padding-right: 10px;">6.</span><span style="display: inline-block; vertical-align: top;"><span class="exturl" data-url="aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC82MTAzNjE2NQ==">世界上最好的编辑器Vim：1700多页数学笔记是如何实时完成的<i class="fa fa-external-link-alt"></i></span></span><a href="#fnref:6" rev="footnote"> ↩︎</a>
+</li>
+</ol>
+</div>
+</div>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/LaTeX/" rel="tag"><i class="fa fa-tag"></i> LaTeX</a>
+              <a href="/tags/Vim/" rel="tag"><i class="fa fa-tag"></i> Vim</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/07/02/LaTeX-length-word-fontsize/" rel="prev" title="LaTeX与Word度量单位间的对应关系">
+                  <i class="fa fa-chevron-left"></i> LaTeX与Word度量单位间的对应关系
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/07/07/multipath/" rel="next" title="时变多径信道的仿真">
+                  时变多径信道的仿真 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Diracs</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">29k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">27 分钟</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/third-party/search/local-search.js"></script>
+
+  <script class="next-config" data-name="pdf" type="application/json">{"object_url":{"url":"https://cdn.jsdelivr.net/npm/pdfobject@2.2.5/pdfobject.min.js","integrity":"sha256-YuNlP9i6s/WH7EaU2kErloo9Vc85C3WVqhoMDgsEVpY="},"url":"/lib/pdf/web/viewer.html"}</script>
+  <script src="/js/third-party/tags/pdf.js"></script>
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"destinyenvoy","repo":"destinyenvoy.github.io","client_id":"f3d3bccc3d5c3ede5e2d","client_secret":"04851501589e9e753dfdad28a03aed1511b2d088","admin_user":"destinyenvoy","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"bec331e2a5cad04d57b1f5a81ec0607d"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

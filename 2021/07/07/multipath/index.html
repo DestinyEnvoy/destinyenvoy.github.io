@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","version":"8.6.1","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="1. 仿真要求 在Matlab下进行编程，设计多径衰落信道仿真模型，具体要求如下：  可配置的参数包括多径数目、多径时延、各多径分量平均功率、多普勒频率扩展 可采用正弦波叠加或者频域滤波两种方式进行实现 多普勒功率谱为高斯功率谱 需要对信道仿真模型输出的信号的特性进行分析，绘制出其实际的信道响应特性">
+<meta property="og:type" content="article">
+<meta property="og:title" content="时变多径信道的仿真">
+<meta property="og:url" content="http://example.com/2021/07/07/multipath/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1. 仿真要求 在Matlab下进行编程，设计多径衰落信道仿真模型，具体要求如下：  可配置的参数包括多径数目、多径时延、各多径分量平均功率、多普勒频率扩展 可采用正弦波叠加或者频域滤波两种方式进行实现 多普勒功率谱为高斯功率谱 需要对信道仿真模型输出的信号的特性进行分析，绘制出其实际的信道响应特性">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644691_%E5%A4%9A%E6%99%AE%E5%8B%92%E9%A2%91%E7%A7%BB.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644681_show1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644682_show2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644684_show3.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644675_kaui1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644677_kaui2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644677_kaui3.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644678_man1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644679_man2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644680_man3.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644686_tan2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644687_tan3.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644689_xuan2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644690_xuan3.png">
+<meta property="article:published_time" content="2021-07-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-07-07T08:07:42.466Z">
+<meta property="article:author" content="Diracs">
+<meta property="article:tag" content="通信">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644691_%E5%A4%9A%E6%99%AE%E5%8B%92%E9%A2%91%E7%A7%BB.png">
+
+
+<link rel="canonical" href="http://example.com/2021/07/07/multipath/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/07/07/multipath/","path":"2021/07/07/multipath/","title":"时变多径信道的仿真"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>时变多径信道的仿真 | Hexo</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"] > svg a {
+  fill: blue;
+  stroke: blue;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Hexo</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">13</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">8</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%BF%E7%9C%9F%E8%A6%81%E6%B1%82"><span class="nav-text">1. 仿真要求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90"><span class="nav-text">2. 原理分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E5%BE%84%E8%A1%B0%E8%90%BD%E7%9A%84%E6%A6%82%E5%BF%B5%E5%8F%8A%E7%89%B9%E6%80%A7"><span class="nav-text">2.1. 多径衰落的概念及特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E6%99%AE%E5%8B%92%E9%A2%91%E7%A7%BB"><span class="nav-text">2.2. 多普勒频移</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E5%BE%84%E8%A1%B0%E8%90%BD%E4%BF%A1%E9%81%93%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-text">2.3. 多径衰落信道的分类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%B3%E5%9D%A6%E8%A1%B0%E8%90%BD%E5%92%8C%E9%A2%91%E7%8E%87%E9%80%89%E6%8B%A9%E6%80%A7%E8%A1%B0%E8%90%BD%E7%9A%84%E5%88%A4%E6%96%AD%E6%9D%A1%E4%BB%B6"><span class="nav-text">2.3.1. 平坦衰落和频率选择性衰落的判断条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BF%AB%E8%A1%B0%E8%90%BD%E4%BF%A1%E9%81%93%E5%92%8C%E6%85%A2%E8%A1%B0%E8%90%BD%E4%BF%A1%E9%81%93%E7%9A%84%E5%88%A4%E6%96%AD%E6%9D%A1%E4%BB%B6"><span class="nav-text">2.3.2. 快衰落信道和慢衰落信道的判断条件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E5%BB%BA%E7%AB%8B"><span class="nav-text">3. 模型建立</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E8%BF%87%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="nav-text">3.1. 随机过程模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%A1%E9%81%93%E5%93%8D%E5%BA%94%E4%B8%AD%E7%9A%84%E6%97%B6%E5%8F%98%E6%A8%A1%E5%9E%8B"><span class="nav-text">3.2. 信道响应中的时变模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E4%B8%80%E6%AD%A5%E5%81%87%E8%AE%BE"><span class="nav-text">3.3. 进一步假设</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%BD%E5%A4%B4%E5%A2%9E%E7%9B%8A%E8%BF%87%E7%A8%8B%E7%9A%84%E4%BA%A7%E7%94%9F"><span class="nav-text">4.1. 抽头增益过程的产生</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%BF%E7%9C%9F%E7%BB%93%E6%9E%9C"><span class="nav-text">5. 仿真结果</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E8%A1%B0%E8%90%BD"><span class="nav-text">5.1. 快衰落</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%85%A2%E8%A1%B0%E8%90%BD"><span class="nav-text">5.2. 慢衰落</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B3%E5%9D%A6%E8%A1%B0%E8%90%BD"><span class="nav-text">5.3. 平坦衰落</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E6%80%A7%E8%A1%B0%E8%90%BD"><span class="nav-text">5.4. 选择性衰落</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81"><span class="nav-text">6. 代码</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Diracs</p>
+  <div class="site-description" itemprop="description">欲上青天揽明月</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Rlc3RpbnllbnZveQ==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;destinyenvoy"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtvZHVudWxsQGdtYWlsLmNvbQ==" title="E-Mail → mailto:kodunull@gmail.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+
+          </div>
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/07/multipath/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Diracs">
+      <meta itemprop="description" content="欲上青天揽明月">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          时变多径信道的仿真
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-07-07 00:00:00 / 修改时间：16:07:42" itemprop="dateCreated datePublished" datetime="2021-07-07T00:00:00+08:00">2021-07-07</time>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>11k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>10 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="仿真要求">1. 仿真要求</h1>
+<p>在Matlab下进行编程，设计多径衰落信道仿真模型，具体要求如下：</p>
+<ul>
+<li>可配置的参数包括多径数目、多径时延、各多径分量平均功率、多普勒频率扩展</li>
+<li>可采用正弦波叠加或者频域滤波两种方式进行实现</li>
+<li>多普勒功率谱为高斯功率谱</li>
+<li>需要对信道仿真模型输出的信号的特性进行分析，绘制出其实际的信道响应特性</li>
+</ul>
+<a id="more"></a>
+<h1 id="原理分析">2. 原理分析</h1>
+<h2 id="多径衰落的概念及特性">2.1. 多径衰落的概念及特性</h2>
+<p>多径传播是移动无线信道中信号产生衰落的主要原因。复杂的无线传播环境中，电波受到外 物的阻挡产生了反射、绕射和散射，当信号到达移动台时，已经不是原来的一路信号了，而是多个路径的多个信号的叠加。因为多路径传输造成了路径距离存在远近差别，所以发送的 一路信号在发散为多个路径后，各信号到达接收机的时间和相位都不一样。各信号按各自不 同相位叠加，相位相同的信号相加，信号增强，反之衰减，信号便产生失真。这样造成叠加 的接收信号的幅度和发送的单一信号幅度的快速巨大的差异，这称之为多径衰落。</p>
+<p>多径衰落存在两种特性：一种是接收信号在幅度上的衰减，另一种是信号在信道上传输产生的时延扩展。具体地说，空间上，当接收端在运动时，随着距离的变化接收信号的幅度会发生衰落效应，其中接收信号的短时间的剧烈变化曲线是由于本地反射造成的，运动距离的变化对信号的平均值产生影响，运动距离的影响包括地形的变化和信号在空间传输产生的能量损耗。时间上，信号传输速度是一定的，但多径传播会导致距离的不同，由此带来信号传输时间的不一样，对同一接收端，接收同一信号在不同时间到达的合成信号，信号彼此之间存在到达时间差，即时延。这就使得接收信号相对发送信号在时间轴上产生信号宽度的增加称为时延扩展。一般来说，多径效应在信号幅度上引起的变化是模拟系统关注的重点；而它产生的时延扩展现象是数字系统考虑的重点。</p>
+<h2 id="多普勒频移">2.2. 多普勒频移</h2>
+<figure>
+<img src="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644691_%E5%A4%9A%E6%99%AE%E5%8B%92%E9%A2%91%E7%A7%BB.png" alt="image" /><figcaption aria-hidden="true">image</figcaption>
+</figure>
+<p>当移动台以固定速率 <span class="math inline">\(v\)</span> 在长度为 <span class="math inline">\(d\)</span> 的路径上运动时，收到来自远端信号 <span class="math inline">\(S\)</span> 发出的信号，如图所示。无线电波从 <span class="math inline">\(S\)</span> 出发，在移动台运动的两个端点分别被移动台接收时所走的路径差</p>
+<p><span class="math display">\[\Delta d=d\cos\theta=v\Delta t \cos\theta\]</span></p>
+<p>这里<span class="math inline">\(\Delta t\)</span>是移动台从左端点运动到右端点所用的时间，<span class="math inline">\(\theta\)</span>是两个端点与入射波的夹角。由于源端距离很远，可以假设两端点处<span class="math inline">\(\theta\)</span>是相同的。所以，由路程差造成的接收信号的相位变化值为</p>
+<p><span class="math display">\[\Delta \phi=\frac{2\pi\Delta d}{\lambda}=\frac{2\pi v \Delta t}{\lambda} \cos\theta\]</span></p>
+<p>由此可得出频率变化值，即多普勒频移<span class="math inline">\(f_d\)</span>为</p>
+<p><span class="math display">\[f_d=\frac{1}{2\pi}\frac{\Delta \phi}{\Delta t}=\frac{v}{\lambda}\cos\theta\]</span></p>
+<h2 id="多径衰落信道的分类">2.3. 多径衰落信道的分类</h2>
+<p>信号通过无线信道时所产生的多径时延、多普勒频移及信号包络所服从的各种分布等，由此导致了信号通过无线信道时经历了不同类型的衰落。接收的多路信号时延差异带来信号间的干扰，由此产生了时间色散和频率点上信号的衰落即频率色散，这两种色散可能产生4种衰落效应。总体来说，产生衰落需要信号、信道以及接收端的移动，缺一不可。概括起来这4种衰落效应是：由时间色散导致的平坦衰落和不同频段上衰落变化的频率选择性衰落；由频率色散造成的信号在频点上幅值减小，导致的快衰落效应和慢衰落效应。</p>
+<h3 id="平坦衰落和频率选择性衰落的判断条件">2.3.1. 平坦衰落和频率选择性衰落的判断条件</h3>
+<p>理论分析结果表明当信道的频带宽度大于原始发送信号的频带带宽，且在整个带宽范围内信号增益恒定不变和相位线性变化，则接收端的信号就是平坦衰落下的信号。此种衰落，信道的多径特性不会改变接收信号的频谱分布。平坦衰落信道的条件可概括为：</p>
+<p><span class="math display">\[B_s\ll B_c,T_s\gg \sigma_{\tau}\]</span></p>
+<p>其中<span class="math inline">\(T_s\)</span>为信号周期(信号带宽<span class="math inline">\(B_s\)</span>的倒数)；<span class="math inline">\(\sigma_{\tau}\)</span>为信道的时延扩展；<span class="math inline">\(B_c\)</span>为相关带宽。</p>
+<p>信道相当于一张门，它的带宽没有需要传送的原始信号的宽，就相当于一个高个子需要通过一张很矮的门，通过后的信号不再能保持信号原有的幅度值和相位值，他们的线性变化也无法保证，信号会表现出选择性衰落，即高个子想要通过需要弯腰才行。由信道的多径传播效应特性，信号通过信道必然存在延迟，延迟与带宽成反比，因此，我们发现在这种选择性衰落发生时信道时延会比信号周期长。从窄的信道即矮门中得到的波形是经历了衰减和时延的失真的信号。上述条件转化为公式如下：</p>
+<p><span class="math display">\[B_s&gt;B_c,T_s&lt;\sigma_{\tau}\]</span> 通常若<span class="math inline">\(T_s\le\sigma_{\tau}\)</span>，可认为这样的信道会使信号产生频率选择性衰落，在实际应用时需要根据调制方式而定。</p>
+<h3 id="快衰落信道和慢衰落信道的判断条件">2.3.2. 快衰落信道和慢衰落信道的判断条件</h3>
+<p>当发送端发出的原始信号的周期长度与信道的相干时间相比要大，信道多普勒扩展<span class="math inline">\(B_D\)</span>同样比原始发送信号的带宽<span class="math inline">\(B_s\)</span>大，信道冲激响应在单个符号时间内变化迅速，接收端收到的信号会剧烈衰变，此衰落为快衰落。所以信号经历快衰落的条件是：</p>
+<p><span class="math display">\[T_s&gt;T_c,B_s&lt;B_D\]</span></p>
+<p>当发送端原始信号的符号周期长度比信道的相干时间短很多，且多普勒频谱扩展<span class="math inline">\(B_D\)</span>比基带信号的带宽<span class="math inline">\(B_s\)</span>短得多时，信道冲激信号的响应变化时间远没有传送的原始信号码元的周期时间长，这种条件下的信道属于慢衰落信道。由分析得出慢衰落的条件是：</p>
+<p><span class="math display">\[T_s\ll T_c,B_s\gg B_D\]</span></p>
+<h1 id="模型建立">3. 模型建立</h1>
+<h2 id="随机过程模型">3.1. 随机过程模型</h2>
+<p>为刻画多径衰落信道提出了各种各样的模型，它们几乎都使用了随机过程来描述衰落。描述多径的模型有两类，离散多径模型，(有限数量的多径分量)和散射多径模型(多径分量的连续体)。在移动无线通信中，第一类模型通常用于移动无线信道的波形级的仿真，而第二类模型通常用在窄带调制的对流层信道。在两种情况下，信道都被建模为具有复低通等效响应<span class="math inline">\(\tilde{c}(\tau,t)\)</span>的线性时变系统。如果有N个离散的多径分量存在，则信道的输出是N个被延迟和衰减的输入信号之和。因此</p>
+<p><span class="math display">\[\tilde{y}(t)=\sum^{N(t)}_{k=1}\tilde{a}_k(t)\tilde{x}(t-\tau_k(t))\]</span></p>
+<p>冲激响应<span class="math inline">\(\tilde{c}(\tau,t)\)</span>为</p>
+<p><span class="math display">\[\tilde{c}(\tau,t)=\sum^{N(t)}_{k=1}\tilde{a}_k(t)\tilde{x}(t-\tau_k(t))\]</span> 其中N(t)为多径分量的数量，而<span class="math inline">\(\tilde{a_k}(t)\)</span>和<span class="math inline">\(\tau_k(t)\)</span>是在t时刻第k条路径的复衰减和延迟。</p>
+<p>如前所述，多径信道可能是时不变的。然而，对所研究的所有实际信道而言，信道可以刻画为时变的(衰落)。引起时变的原因有两个：</p>
+<p>1.即使发射机和接收机是固定的， 环境也在变化。例如电离层的变化、植物的摇摆以及反射体和散射体的移动。</p>
+<p>2.即使环境可能是静态的，发射机和接收机也是移动的。因此，在实际的多径信道中，N、<span class="math inline">\(a_k\)</span>和<span class="math inline">\(\tau_k\)</span>都可能随时间随机地变化，如图所示为一个实例。 由衰落引起的接收信号随机波动可以被建模为时间t的随机过程<span class="math inline">\(\tilde{c}(\tau,t)\)</span>。如果接收信号是各路径的大量散射分量之和，则由中心极限定理可知，<span class="math inline">\(\tilde{c}(\tau,t)\)</span>表示为时间的复高斯过程。在任意时刻t，概率密度函数的实部和虚部都是高斯的。这个模型意味着对于每个<span class="math inline">\(\tau\)</span>或<span class="math inline">\(\tau_k\)</span>，信号路径是由大量不能分离的分量组成，因此，<span class="math inline">\(\tilde{c}(\tau,t)\)</span>和<span class="math inline">\(\tilde{a}_k(t)\)</span>都是时间的复高斯过程。</p>
+<p>如果<span class="math inline">\(\tilde{c}(\tau,t)\)</span>具有零均值，则包络<span class="math inline">\(R=|\tilde{c}(\tau,t)|\)</span>具有形式如下的瑞利概率密度函数</p>
+<p><span class="math display">\[f_R(r)=\frac{r}{\sigma^2}\exp\left(-\frac{r^2}{2\sigma^2}\right),\quad r&gt;0\]</span> 其中<span class="math inline">\(\sigma^2\)</span>是<span class="math inline">\(\tilde{c}(\tau,t)\)</span>的实部和虚部的方差。</p>
+<p>如果<span class="math inline">\(\tilde{c}(\tau,\tau)\)</span>具有非零均值，则意味着有视距非衰落的路径(称为镜像分量)存在，包络<span class="math inline">\(R=|\tilde{c}(\tau,T)|\)</span>具有形式如下的莱斯概率密度函数</p>
+<p><span class="math display">\[f_R(r)=\frac{r}{\sigma^2}I_0\left(\frac{Ar}{\sigma^2}\right)\exp\left(-\frac{r^2+A^2}{2\sigma^2}\right),\quad r&gt;0\]</span> 其中A是<span class="math inline">\(\tilde{c}(\tau,t)\)</span>的非零均值，<span class="math inline">\(I_0(z)\)</span>是修正的Bessel函数，定义如下</p>
+<p><span class="math display">\[I_0(z)=\frac{1}{2\pi}\int^{2\pi}_0\exp\left(z\cos(u)\right)\mathrm{d}u\]</span> 比值<span class="math inline">\(K=(A^2)/(\sigma^2)\)</span>叫莱斯分布因子，是非衰落分量功率对衰落分量功率的比值。<span class="math inline">\(K\gg 1\)</span>表示衰落不严重，而<span class="math inline">\(K \ll 1\)</span>表示存在严重的衰落。</p>
+<p><span class="math inline">\(\tilde{c}(\tau,t)\)</span>的概率密度函数描述了复冲激响应的瞬时值，而时变特性可以使用变量为t的随机过程适当的自相关函数或功率谱密度来建模。</p>
+<h2 id="信道响应中的时变模型">3.2. 信道响应中的时变模型</h2>
+<p>要对信道的时变特性进行数学建模，可将<span class="math inline">\(\tilde{c}(\tau,t)\)</span>视为一个参数的广义平稳(wide sense stationary, WSS)随机过程，其自相关函数为</p>
+<p><span class="math display">\[R_{\tilde{c}\tilde{c}}(\tau_1,\tau_2,\alpha)=E\left[{\tilde{c}^*(\tau_1,t)\tilde{c}(\tau_2,t+\alpha)}\right]\]</span> 在大多数的多径信道中，假设对应于不同延迟(即不同路径)的衰或和相位偏移不相关，这种不相关散射(uncorrelated scatterig, US)假设，有</p>
+<p><span class="math display">\[R_{\tilde{c}\tilde{c}}(\tau_1,\tau_2,\alpha)=R_{\tilde{c}\tilde{c}}(\tau_1,\alpha)\delta(\tau_1-\tau_2)\]</span> 上式体现了<strong>广义平稳</strong>和不相关散射两方面的假设，它经常被称为衰落的WSSUS模型，最早是由Bello提出的。用<span class="math inline">\(R_{\tilde{c}\tilde{c}}(\tau_1,\alpha)\)</span>来表示自相关函数，则有</p>
+<p><span class="math display">\[R_{\tilde{c}\tilde{c}}(\tau_1,\alpha)=E\left[{\tilde{c}^*(\tau,t)\tilde{c}(\tau,t+\alpha)}\right]\]</span> 对自相关函数作傅里叶变换，我们可以得到衰落信道的频域模型，用功率谱密度表示为</p>
+<p><span class="math display">\[S(\tau,\lambda)=F{R_{\tilde{c}\tilde{c}}(\tau,\alpha)}=\int_{-\infty}^{\infty}R_{\tilde{c}\tilde{c}}(\tau,\alpha)\exp(-j2\pi \lambda\alpha)\mathrm{d}\alpha\]</span> <span class="math inline">\(S(\tau,\lambda)\)</span>被称为信道的<strong>散射函数</strong>，是一个有两个自变量的函数，其中一个是<strong>时域变量(延迟)</strong>,另一个是<strong>频域变量</strong>，即多普勒频率变量。散射函数以延迟和多普勒频率的函数形式，给出了一个信道平均功率输出的度量。</p>
+<p>通过散射函数，我们可以得到信道的最重要的参數，它们将影响在信道上运行的通信系统的性能。我们从定义如下的"多径强度"曲线开始人手</p>
+<p><span class="math display">\[p(\tau)=R_{\tilde{c}\tilde{c}}(\tau,0)=E\left[{|\tilde{c}(\tau,t)|^2}\right]\]</span> 上式表示作为延迟函数的平均接收功事，上式通常被称为功率-延迟曲线。可以证明，<span class="math inline">\(p(\tau)\)</span>与散射函数通过下式相关联</p>
+<p><span class="math display">\[p(\tau)=\int_{-\infty}^{\infty}S(\tau,\lambda)\mathrm{d}\lambda\]</span> 刻画衰落的另一个有用的函数是<strong>多普勒功率谱</strong>， 它也可以通过下式由散射函数推导出来</p>
+<p><span class="math display">\[S_d(\lambda)=\int_{-\infty}^{\infty}S(\tau,\lambda)\mathrm{d}\tau\]</span> 这些函数的相互关系如图所示</p>
+<figure>
+<img src="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644681_show1.png" alt="散射函数不同部分的相互关系" /><figcaption aria-hidden="true">散射函数不同部分的相互关系</figcaption>
+</figure>
+<h2 id="进一步假设">3.3. 进一步假设</h2>
+<ul>
+<li><p>每个多径信号延迟、衰减互相彼此独立，不相关</p></li>
+<li><p>多普勒功率谱密度模型存在多个多径分量，其中每个分量的延 迟不同，但都具有相同形状的多普勒功率谱，因此每个多径分量 的多普勒功率谱仍然是高斯的</p></li>
+<li><p>每个多径信号的复衰减因子包络瑞利分布，相位均匀：即实部高斯分布，虚部也是高斯的， 实部虚部不相关。换言之，每路多径信号经过瑞利信道。</p></li>
+<li><p>假设多径分量的数量和延迟结构的变化相比复衰减因子的的变化要缓慢，因此，在仿真期间可以认为是常数。</p></li>
+</ul>
+<p>综合以上假设，可以得到第<span class="math inline">\(k\)</span> 条路径的时域相关函数<span class="math inline">\(R_k(\alpha)=E \left[ \tilde{a}_k^{*}(t)\tilde{a}_k(t+\alpha) \right]\)</span> 对<span class="math inline">\(R_k(\alpha)\)</span>做傅里叶变换可以得到 <span class="math inline">\(S_k(\lambda)\)</span>,即多普勒功率谱。</p>
+<p>题目限定<span class="math inline">\(S_k(\lambda)\)</span>是高斯的，则 <span class="math inline">\(R_k(\alpha)\)</span>也是高斯的，因此仿真需要产生一个 时域高斯相关的随机过程的一个样本函数。 # 4. 仿真模型</p>
+<p>多径衰落信道的仿真模型可以用如图所示的延时抽头线(TDL)来实现。</p>
+<figure>
+<img src="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644682_show2.png" alt="延迟抽头线" /><figcaption aria-hidden="true">延迟抽头线</figcaption>
+</figure>
+<h2 id="抽头增益过程的产生">4.1. 抽头增益过程的产生</h2>
+<p>抽头增益过程是具有高斯概率密度函数和任意功率谱密度函数的平稳随机过程。最简单的抽头增益过程模型假设它们都是不相关的复高斯过程，并具有零均值、相同功率谱密度和不同方差。在这种情况下， 如图所示，抽头增益过程可以通过对白高斯过程进行滤波来产生。</p>
+<figure>
+<img src="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644684_show3.png" alt="第n个抽头增益过程的产生" /><figcaption aria-hidden="true">第n个抽头增益过程的产生</figcaption>
+</figure>
+<p>选择滤波器传递函数，使其产生所需的多普勒功率谱密度。换句话说，选择<span class="math inline">\(H(f)\)</span>使</p>
+<p><span class="math display">\[S_{\tilde{g}\tilde{g}}(f)=S_d(f)=S_{\tilde{w}\tilde{w}}(f)|\tilde{H}(f)|^2=|\tilde{H}(f)|^2\]</span></p>
+<p>其中<span class="math inline">\(S_{\tilde{w}\tilde{w}}(f)\)</span>是输入白噪声过程的功率谱密度，可以将其设置为1；<span class="math inline">\(S_{\tilde{g}\tilde{g}}(f)\)</span>是给定的抽头增益过程的多普勒功率谱密度，选择滤波器增益使得<span class="math inline">\(\tilde{g}(t)\)</span>具有归一化功率1。图中的静态增益<span class="math inline">\(\sigma_n\)</span>说明不同抽头可以具有不同功率级或方差。如果抽头增益的功率谱密度不同，则需要使用不同的滤波器来实现不同的抽头。</p>
+<h1 id="仿真结果">5. 仿真结果</h1>
+<p>仿真设计了一个复基带信号</p>
+<p><span class="math display">\[\tilde{s}(t)= \sum_{i=1}^3 \exp\left({2\pi f_i t}\right)\]</span> 其中 <span class="math inline">\(f_1=1Hz,f_2=3Hz,f_3=5Hz\)</span>,多径数量<span class="math inline">\(n=10\)</span>，等作为 自定义函数<span class="math inline">\(\mathrm{channel.m}\)</span>文件的输入。</p>
+<h2 id="快衰落">5.1. 快衰落</h2>
+<figure class="highlight plain"><figcaption><span>language</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">n&#x3D;10;%多径数量</span><br><span class="line">tau_max&#x3D;0.001;%最大可能多径时延</span><br><span class="line">tau&#x3D;[0,tau_max*rand(1,n-1)];%随机生成n个时延</span><br><span class="line">Ptau&#x3D;1.&#x2F;(tau+1);%根据时延分配功率</span><br><span class="line">f1&#x3D;1;f2&#x3D;3;f3&#x3D;5;%设计基带频率</span><br><span class="line">%设计基带复信号</span><br><span class="line">singal&#x3D;@(tt) exp(j*2*pi*f1*tt)+exp(j*f2*2*pi*tt)+exp(j*f3*2*pi*tt);</span><br><span class="line">channel(n,tau,Ptau,1,singal);%快衰落</span><br></pre></td></tr></table></figure>
+<p>在这种输入参数下，将会发生快衰落，仿真结果如图<a href="#fig:kaui1" data-reference-type="ref" data-reference="fig:kaui1">2</a>,<a href="#fig:kaui2" data-reference-type="ref" data-reference="fig:kaui2">3</a>,<a href="#fig:kaui3" data-reference-type="ref" data-reference="fig:kaui3">4</a></p>
+<figure>
+<img src="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644675_kaui1.png" id="fig:kaui1" alt="快衰落情况下衰减系数" /><figcaption aria-hidden="true">快衰落情况下衰减系数</figcaption>
+</figure>
+<figure>
+<img src="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644677_kaui2.png" id="fig:kaui2" alt="快衰落下的瞬态响应" /><figcaption aria-hidden="true">快衰落下的瞬态响应</figcaption>
+</figure>
+<figure>
+<img src="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644677_kaui3.png" id="fig:kaui3" alt="输出信号观察" /><figcaption aria-hidden="true">输出信号观察</figcaption>
+</figure>
+<ol type="1">
+<li><p>观察图<a href="#fig:kaui1" data-reference-type="ref" data-reference="fig:kaui1">2</a>，可以发现，复衰减因子的功率谱是高斯的，满足题目要求。</p></li>
+<li><p>观察图<a href="#fig:kaui2" data-reference-type="ref" data-reference="fig:kaui2">3</a>,可以发现，信道的冲激响应在信道的符号周期内变换很快</p></li>
+<li><p>观察图<a href="#fig:kaui3" data-reference-type="ref" data-reference="fig:kaui3">4</a>,可以发现，输出信号的频谱在<span class="math inline">\(f_1,f_2,f_3\)</span>处产生 了频谱扩展，即产生了新的频谱分量</p></li>
+</ol>
+<h2 id="慢衰落">5.2. 慢衰落</h2>
+<figure class="highlight plain"><figcaption><span>language</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">channel(n,tau,Ptau,0.001,singal);%观察慢衰落</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644678_man1.png" id="fig:man1" alt="慢衰落情况下衰减系数" /><figcaption aria-hidden="true">慢衰落情况下衰减系数</figcaption>
+</figure>
+<figure>
+<img src="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644679_man2.png" id="fig:man2" alt="慢衰落下的瞬态响应" /><figcaption aria-hidden="true">慢衰落下的瞬态响应</figcaption>
+</figure>
+<figure>
+<img src="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644680_man3.png" id="fig:man3" alt="输出信号观察" /><figcaption aria-hidden="true">输出信号观察</figcaption>
+</figure>
+<ol type="1">
+<li><p>观察图<a href="#fig:man1" data-reference-type="ref" data-reference="fig:man1">5</a>，可以发现，复衰减因子的功率谱几乎是一个冲激函数。</p></li>
+<li><p>观察图<a href="#fig:kaui2" data-reference-type="ref" data-reference="fig:kaui2">3</a>,可以发现，信道的冲激响应在信道的符号周期内变换的很慢</p></li>
+<li><p>观察图<a href="#fig:kaui3" data-reference-type="ref" data-reference="fig:kaui3">4</a>,可以发现，输出信号的频谱在<span class="math inline">\(f_1,f_2,f_3\)</span>处几乎不产生 频谱扩展，即不产生新的频谱分量</p></li>
+<li><p>这些是慢衰落的一些特性</p></li>
+</ol>
+<h2 id="平坦衰落">5.3. 平坦衰落</h2>
+<figure class="highlight plain"><figcaption><span>language</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">channel(n,tau,Ptau,0.01,singal);%观察平坦衰落</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644686_tan2.png" id="fig:tan2" alt="平坦衰落下的瞬态响应" /><figcaption aria-hidden="true">平坦衰落下的瞬态响应</figcaption>
+</figure>
+<figure>
+<img src="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644687_tan3.png" id="fig:tan3" alt="输出信号观察" /><figcaption aria-hidden="true">输出信号观察</figcaption>
+</figure>
+<ol type="1">
+<li><p>观察图<a href="#fig:tan2" data-reference-type="ref" data-reference="fig:tan2">8</a>,可以发现，信道的冲激响应在信道的符号周期内有较大变化</p></li>
+<li><p>观察图<a href="#fig:tan3" data-reference-type="ref" data-reference="fig:tan3">9</a>,可以发现，输出信号的频谱在<span class="math inline">\(f_1,f_2,f_3\)</span>具有相同的功率，信道 对3个频率有相等的增益。虽然频域没有发生变化，但因为信道是时变的，所以 输出信号的幅度会有剧烈的变动。</p></li>
+<li><p>这些是平坦衰落的一些特性</p></li>
+</ol>
+<h2 id="选择性衰落">5.4. 选择性衰落</h2>
+<figure class="highlight plain"><figcaption><span>language</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tau_max&#x3D;1;%最大可能多径时延</span><br><span class="line">tau&#x3D;[0,tau_max*rand(1,n-1)];%随机生成n个时延</span><br><span class="line">Ptau&#x3D;1.&#x2F;(tau+1);</span><br><span class="line">channel(n,tau,Ptau,0.001,singal);%选择性衰落</span><br></pre></td></tr></table></figure>
+<figure>
+<img src="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644689_xuan2.png" id="fig:xuan2" alt="选择性衰落下的瞬态响应" /><figcaption aria-hidden="true">选择性衰落下的瞬态响应</figcaption>
+</figure>
+<figure>
+<img src="https://raw.githubusercontent.com/DestinyEnvoy/Githubimg/master/1625644690_xuan3.png" id="fig:xuan3" alt="输出信号观察" /><figcaption aria-hidden="true">输出信号观察</figcaption>
+</figure>
+<ol type="1">
+<li><p>观察图<a href="#fig:xuan3" data-reference-type="ref" data-reference="fig:xuan3">11</a>,可以发现，输入信号的频谱在<span class="math inline">\(f_1,f_2,f_3\)</span>具有相同的功率，但是输出信号的 对3个频率有不同的功率，即信道对不同频段有不同的增益。频谱发生失真， 但是输出信号时域幅度变动不大。</p></li>
+<li><p>这些是选择性衰落的一些特性</p></li>
+</ol>
+<h1 id="代码">6. 代码</h1>
+<p>点击左侧三角可展开代码</p>
+<details>
+<summary>
+对比四种衰落测试代码
+</summary>
+<figure class="highlight plain"><figcaption><span>.matlab language</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">clear</span><br><span class="line">clf</span><br><span class="line">n&#x3D;10;%多径数量</span><br><span class="line">tau_max&#x3D;0.001;%最大可能多径时延</span><br><span class="line">tau&#x3D;[0,tau_max*rand(1,n-1)];%随机生成n个时延</span><br><span class="line">Ptau&#x3D;1.&#x2F;(tau+1);%根据时延分配功率</span><br><span class="line">f1&#x3D;1;f2&#x3D;3;f3&#x3D;5;%设计基带频率</span><br><span class="line">%设计基带复信号</span><br><span class="line">singal&#x3D;@(tt) exp(j*2*pi*f1*tt)+exp(j*f2*2*pi*tt)+exp(j*f3*2*pi*tt);</span><br><span class="line">% channel(n,tau,Ptau,1,singal);%快衰落</span><br><span class="line">% channel(n,tau,Ptau,0.001,singal);%观察慢衰落</span><br><span class="line">% channel(n,tau,Ptau,0.01,singal);%观察平坦衰落</span><br><span class="line">tau_max&#x3D;1;%最大可能多径时延</span><br><span class="line">tau&#x3D;[0,tau_max*rand(1,n-1)];%随机生成n个时延</span><br><span class="line">Ptau&#x3D;1.&#x2F;(tau+1);</span><br><span class="line">channel(n,tau,Ptau,0.001,singal);%选择性衰落</span><br></pre></td></tr></table></figure>
+</details>
+<details>
+<summary>
+仿真多径信道
+</summary>
+<figure class="highlight plain"><figcaption><span>.matlab language</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br></pre></td><td class="code"><pre><span class="line">function out&#x3D;channel(n,tau,Ptau,Bd,signal_in)</span><br><span class="line">% n   &#x3D; 1;        %多径数目</span><br><span class="line">% tau &#x3D;  ;        %多径时延</span><br><span class="line">% Ptau&#x3D;  ;        %各多径分量平均功率</span><br><span class="line">% Bd  &#x3D;  ;        %多普勒频谱的3dB带宽</span><br><span class="line">% signal_in       %输入的信号表达式，为一匿名函数</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Fs&#x3D;100;Ts&#x3D;1&#x2F;Fs;</span><br><span class="line">N&#x3D;2e+4;</span><br><span class="line">t&#x3D;(0:N-1)*1&#x2F;Fs;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">%%设计高斯滤波器，目的是为每一路产生相关的复衰减因子</span><br><span class="line">a&#x3D;sqrt(1&#x2F;4*log(2)&#x2F;Bd^2);%高斯滤波器参数，若Bd为3dB带宽a^2Bd^2&#x3D;1&#x2F;4ln2</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">H_gauss_fre &#x3D;@(f) exp(-a^2*f.^2)&#x2F;sqrt(2*pi&#x2F;(2*a^2));%频域</span><br><span class="line">H_gauss_time&#x3D;@(t) sqrt(t).&#x2F;a.*exp(-pi^2&#x2F;a^2*t.^2);%时域</span><br><span class="line">Gauss_t&#x3D;(0:N-1)*Ts;</span><br><span class="line">% sFilt &#x3D; filter([0 1],[1,1], s); % Example filtered signal</span><br><span class="line"></span><br><span class="line">%%产生n路单位复高斯白噪声</span><br><span class="line">No_complex&#x3D;wgn(n,N,1,&#39;linear&#39;,&#39;complex&#39;);</span><br><span class="line"></span><br><span class="line">%%各路的增益</span><br><span class="line">K&#x3D;sqrt(Ptau);</span><br><span class="line"></span><br><span class="line">signal_out&#x3D;zeros(n,N);</span><br><span class="line">at&#x3D;zeros(n,N);</span><br><span class="line"></span><br><span class="line">for i&#x3D;1:n</span><br><span class="line">    %生成第i个路径复增益的一个样本函数</span><br><span class="line">    at(i,:)&#x3D;filter(K(i)*H_gauss_time(Gauss_t),1,No_complex(i,:));</span><br><span class="line">    %第i路输出</span><br><span class="line">    signal_out(i,:)&#x3D;at(i,:).*signal_in(t-tau(i));</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">%%合并第n个路径信号</span><br><span class="line">out&#x3D;sum(signal_out);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">%%绘图:复增益</span><br><span class="line">f1&#x3D;figure; </span><br><span class="line">subplot 311</span><br><span class="line">plot(real(No_complex(1,:)));</span><br><span class="line">title(&#39;复高斯白噪音&#39;)</span><br><span class="line">% at_conv&#x3D;conv(No_complex,H_gauss_time(t),&#39;same&#39;);</span><br><span class="line">[r,lags]&#x3D;xcorr(at(1,:),&#39;unbiased&#39;);</span><br><span class="line">% var(at)</span><br><span class="line">maxlags&#x3D;max(lags);</span><br><span class="line">% maxlags</span><br><span class="line">index1&#x3D;maxlags-100:maxlags+100;</span><br><span class="line">subplot 312</span><br><span class="line">plot(lags(index1)*Ts,real(r(index1)));</span><br><span class="line">title(&#39;高斯滤波后的波形:复衰减因子的时域自相关&#39;)</span><br><span class="line">subplot 313</span><br><span class="line">Fa&#x3D;abs(fftshift(fft(real(r))));</span><br><span class="line">Fa_normaliz&#x3D;Fa&#x2F;max(Fa);</span><br><span class="line">index2_shift&#x3D;round(20*Bd*N&#x2F;Fs);</span><br><span class="line">if(round(20*Bd*N&#x2F;Fs)&gt;&#x3D;N)</span><br><span class="line">    index2_shift&#x3D;N-1;</span><br><span class="line">end</span><br><span class="line">index2&#x3D;N-index2_shift:N+index2_shift;</span><br><span class="line">plot(lags(index2)*Fs&#x2F;(2*N),Fa_normaliz(index2));</span><br><span class="line">title(&#39;一条多径上的复衰减因子的功率谱(多普勒频谱)&#39;)</span><br><span class="line"></span><br><span class="line">%%绘图:时变单位脉冲响应</span><br><span class="line">f2&#x3D;figure;</span><br><span class="line">pulse&#x3D;abs(at);</span><br><span class="line">index3&#x3D;1:round(N&#x2F;1200);</span><br><span class="line">stem3(t(index3),tau,pulse(:,index3),&#39;filled&#39;)</span><br><span class="line">ylabel(&#39;时域延迟分量&#39;)</span><br><span class="line">xlabel(&#39;时间&#39;)</span><br><span class="line">title(&#39;信道冲激响应h(\tau,t)&#39;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">%%绘图：输入输出波形</span><br><span class="line">f3&#x3D;figure;</span><br><span class="line">index&#x3D;round(N&#x2F;2):round(N&#x2F;2+N&#x2F;6);</span><br><span class="line">subplot 411</span><br><span class="line">stem(tau-min(tau),Ptau,&#39;filled&#39;)</span><br><span class="line">title(&#39;功率-延迟曲线&#39;)</span><br><span class="line"></span><br><span class="line">subplot 412</span><br><span class="line"></span><br><span class="line">% plot(t(index),real(signal_out(1,index)))</span><br><span class="line">plot(t(index),real(out(index)))</span><br><span class="line">title(&#39;输出信号时域&#39;)</span><br><span class="line"></span><br><span class="line">subplot 413</span><br><span class="line">plot(t(index),real(signal_in(t(index))))</span><br><span class="line">title(&#39;输入信号时域&#39;)</span><br><span class="line"></span><br><span class="line">subplot 414</span><br><span class="line">out&#x3D;real(out);</span><br><span class="line">[r2,lags2]&#x3D;xcorr(out,&#39;unbiased&#39;);</span><br><span class="line">index414&#x3D;N-round(40*N&#x2F;Fs):N+round(40*N&#x2F;Fs);</span><br><span class="line">F_out&#x3D;abs(fftshift(fft(r2)));</span><br><span class="line">plot(lags2(index414)*Fs&#x2F;(2*N),F_out(index414))</span><br><span class="line">title(&#39;输出信号频域&#39;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+</details>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%80%9A%E4%BF%A1/" rel="tag"><i class="fa fa-tag"></i> 通信</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/09/07/how-to-use-vimtex/" rel="prev" title="vim+vimtex:带给你飞一般的LaTeX编辑体验">
+                  <i class="fa fa-chevron-left"></i> vim+vimtex:带给你飞一般的LaTeX编辑体验
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Diracs</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">29k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">27 分钟</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/third-party/search/local-search.js"></script>
+
+  <script class="next-config" data-name="pdf" type="application/json">{"object_url":{"url":"https://cdn.jsdelivr.net/npm/pdfobject@2.2.5/pdfobject.min.js","integrity":"sha256-YuNlP9i6s/WH7EaU2kErloo9Vc85C3WVqhoMDgsEVpY="},"url":"/lib/pdf/web/viewer.html"}</script>
+  <script src="/js/third-party/tags/pdf.js"></script>
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"destinyenvoy","repo":"destinyenvoy.github.io","client_id":"f3d3bccc3d5c3ede5e2d","client_secret":"04851501589e9e753dfdad28a03aed1511b2d088","admin_user":"destinyenvoy","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"f24b599d2d8687a86e439ff514a705ba"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>
