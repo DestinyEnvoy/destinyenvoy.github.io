@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.4.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.11.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="在数字信号的调制中，AWGN信道下，星座图一般是采用gray code 进行编码。 本文讲述格雷码的概念及其分析在星座图中格雷编码映射的必要性，最后给出其Python 代码实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="星座图中格雷映射及其实现">
+<meta property="og:url" content="http://example.com/2023/03/11/gray-modulation/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="在数字信号的调制中，AWGN信道下，星座图一般是采用gray code 进行编码。 本文讲述格雷码的概念及其分析在星座图中格雷编码映射的必要性，最后给出其Python 代码实现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-11T04:21:08.000Z">
+<meta property="article:modified_time" content="2023-03-11T06:16:31.659Z">
+<meta property="article:author" content="Diracs">
+<meta property="article:tag" content="通信">
+<meta property="article:tag" content="调制">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2023/03/11/gray-modulation/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2023/03/11/gray-modulation/","path":"2023/03/11/gray-modulation/","title":"星座图中格雷映射及其实现"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>星座图中格雷映射及其实现 | Hexo</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">14</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">9</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%BC%E9%9B%B7%E7%A0%81"><span class="nav-text">格雷码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%BC%E9%9B%B7%E6%98%9F%E5%BA%A7%E6%98%A0%E5%B0%84"><span class="nav-text">格雷星座映射</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%BC%E9%9B%B7%E7%A0%81%E7%9A%84%E6%9E%84%E9%80%A0-%E6%A0%BC%E9%9B%B7%E7%A0%81"><span class="nav-text">格雷码的构造[^格雷码]</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-text">代码实现</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Diracs</p>
+  <div class="site-description" itemprop="description">欲上青天揽明月</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL2Rlc3RpbnllbnZveQ==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;destinyenvoy"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmtvZHVudWxsQGdtYWlsLmNvbQ==" title="E-Mail → mailto:kodunull@gmail.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/11/gray-modulation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Diracs">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="欲上青天揽明月">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="星座图中格雷映射及其实现 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          星座图中格雷映射及其实现
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-03-11 12:21:08 / 修改时间：14:16:31" itemprop="dateCreated datePublished" datetime="2023-03-11T12:21:08+08:00">2023-03-11</time>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>在数字信号的调制中，AWGN信道下，星座图一般是采用gray code 进行编码。</p>
+<p>本文讲述格雷码的概念及其分析在星座图中格雷编码映射的必要性，最后给出其Python 代码实现。</p>
+</blockquote>
+<span id="more"></span>
+
+<h1 id="格雷码"><a href="#格雷码" class="headerlink" title="格雷码"></a>格雷码</h1><p>先了解一下gray code 的概念：格雷码是二进制数字系统的一种排序方式，使得两个连续值在比特级别上仅仅相差一位。</p>
+<p>例如：十进制的<code>1</code> 在自然二进制中的表示通常为<code>001</code>，而<code>2</code>将被编码为<code>010</code>。对应的格雷码为<code>001</code>和<code>011</code>。这样，将一个值从<code>1</code>递增至<code>2</code><br>对应的编码仅仅需要更改一位比特，而不是两位。</p>
+<p>格雷码广泛用于数字通信系统中的纠错[^gray_code]。</p>
+<ul>
+<li>$k$ 位二进制数的格雷码序列可以当作 $k$ 维空间中的一个超立方体（二维里的正方形，一维里的单位向量)顶点的哈密尔顿回路，其中格雷码的每一位代表一个维度的坐标。</li>
+</ul>
+<h1 id="格雷星座映射"><a href="#格雷星座映射" class="headerlink" title="格雷星座映射"></a>格雷星座映射</h1><p>在QAM等数字调制方案中，数据通常以4 位或更多位的符号传输，信号的星座图被安排为使得相邻星座点传送的位模式仅相差一位。通过将其与能够纠正单个比特错误的信道编码结合，接收器可以纠正任何导致星座点偏离到相邻点区域的传输错误。这使得传输系统不易受噪声影响。</p>
+<p>例如4QAM信号，其自然映射和格雷星座映射为:</p>
+<table>
+<thead>
+<tr>
+<th>:–:</th>
+<th>:–:</th>
+<th>:–:</th>
+<th>:–:</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据比特</td>
+<td>十进制</td>
+<td>自然映射</td>
+<td>格雷映射</td>
+</tr>
+<tr>
+<td><code>00</code></td>
+<td><code>0</code></td>
+<td><code>-1-1j</code></td>
+<td><code>-1-1j</code></td>
+</tr>
+<tr>
+<td><code>01</code></td>
+<td><code>1</code></td>
+<td><code>-1+1j</code></td>
+<td><code>-1+1j</code></td>
+</tr>
+<tr>
+<td><code>10</code></td>
+<td><code>2</code></td>
+<td><code>1+1j</code></td>
+<td><code>1-1j</code></td>
+</tr>
+<tr>
+<td><code>11</code></td>
+<td><code>3</code></td>
+<td><code>1-1j</code></td>
+<td><code>1+1j</code></td>
+</tr>
+</tbody></table>
+<p>假设AWGN信道下，某码元发送<code>10</code> 数据比特，接收端采用最大似然判决 $y&#x3D;x+n$, $\hat{x}&#x3D;\arg\min_x ||y-x||$ ，采用不同映射，有以下情形：</p>
+<ul>
+<li>自然：对应发送<code>1+1j</code> ，有$P_1$ 的概率被判决为<code>1-1j</code>(即判为<code>11</code>,误比特数1个), $P_1$的 概率被判决为<code>01</code>（误比特2个）,$P_2(P_2&lt;P_1)$ 的概率被判决为<code>00</code>(误比特1个) ，那么平均误比特$3P_1+P_2$ 个</li>
+<li>格雷：对应发送<code>1-1j</code>,$P_1$ 的概率判决为<code>11</code>和<code>00</code>，均误比特<code>1</code>个，$P_2$的概率判为<code>01</code>,误比特$2P_1+2P_2$</li>
+<li>$3P_1+P_2&gt;2P_1+2P_2$</li>
+</ul>
+<p>发送其余数据比特时，情形类似。可以发现AWGN信道下格雷映射方案的<code>BER</code>性能是优于自然映射的。相比于正常二进制映射，使用格雷码可以降低总体错误率。这也是星座映射采用格雷映射的原因。</p>
+<h1 id="格雷码的构造-格雷码"><a href="#格雷码的构造-格雷码" class="headerlink" title="格雷码的构造[^格雷码]"></a>格雷码的构造[^格雷码]</h1><p>我们观察以下 $n$ 维的二进制和其格雷码 $G(n)$。如果 $G(n)$ 的二进制第 $i$ 位为1，仅当 $n$ 的二进制第 $i$ 位为 <code>1</code>,第$i+1$ 位为 $0$ 或者 第$i$ 位为 <code>0</code> ,第 $i+1$ 位为 <code>1</code>。于是可以当成一个异或运算：</p>
+<p>$$G(n)&#x3D;n\oplus \lfloor\frac{n}{2}\rfloor$$</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">g</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123; <span class="keyword">return</span> n ^ (n &gt;&gt; <span class="number">1</span>); &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><ul>
+<li>二维QAM格雷映射基于这样一种思想: 如果每一维是格雷映射的，那么他们的笛卡尔积也是格雷的。即两个gray mapping 的PAM映射组合起来就是QAM gray mapping.</li>
+<li>二维的PSK gray mapping 和一维PAM gray mapping 类似。</li>
+</ul>
+<div class="note info no-icon"><p>点击左侧三角可展开代码</p>
+</div>
+
+
+
+<details>
+<summary>Python 实现</summary>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">qam_constellation</span>(<span class="params">M,normalize=<span class="literal">False</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot; M must be 2^k ,where k is an even integer</span></span><br><span class="line"><span class="string">    gray mapping</span></span><br><span class="line"><span class="string">    param:</span></span><br><span class="line"><span class="string">        - M: the size of qam set</span></span><br><span class="line"><span class="string">        - normalize: normalize the average energy qam symbols unit</span></span><br><span class="line"><span class="string">    return:</span></span><br><span class="line"><span class="string">        1-D numpy array</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">assert</span> np.log2(M).is_integer()</span><br><span class="line">    m = <span class="built_in">int</span>(np.sqrt(M))</span><br><span class="line">    x = np.zeros(m,np.int32) <span class="comment"># gray mapping binding to natural number</span></span><br><span class="line">    y = np.zeros(m,np.int32) </span><br><span class="line">    <span class="comment"># mappping natural number to gray code in octal</span></span><br><span class="line">    natural2gray = <span class="keyword">lambda</span> x: x ^ (x &gt;&gt; <span class="number">1</span>)</span><br><span class="line">    x[natural2gray(np.arange(<span class="number">0</span>, m))] =  np.arange(<span class="number">0</span>, <span class="number">2</span>*m,<span class="number">2</span>) -m+<span class="number">1</span></span><br><span class="line">    y[natural2gray(np.arange(<span class="number">0</span>, m))] =  np.arange(<span class="number">0</span>, <span class="number">2</span>*m,<span class="number">2</span>) -m+<span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    constellation = np.zeros((m, m), dtype=np.cfloat)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(m):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(m):</span><br><span class="line">            constellation[i][j] = (x[i]+<span class="number">1j</span>* y[j])</span><br><span class="line">    <span class="keyword">if</span> normalize:</span><br><span class="line">        <span class="keyword">return</span> constellation.flatten()/(np.linalg.norm(constellation)/m)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> constellation.flatten()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">psk_constellation</span>(<span class="params">M</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot; </span></span><br><span class="line"><span class="string">    gray mapping</span></span><br><span class="line"><span class="string">    param:</span></span><br><span class="line"><span class="string">        - M: the size of psk set</span></span><br><span class="line"><span class="string">        - normalize: normalize the average energy qam symbols unit</span></span><br><span class="line"><span class="string">    return:</span></span><br><span class="line"><span class="string">        1-D numpy array</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    phase = np.arange(<span class="number">0</span>, M) * <span class="number">2</span> * np.pi / M</span><br><span class="line">    constellation = np.zeros(M, dtype=np.cfloat)</span><br><span class="line">    natural2gray = <span class="keyword">lambda</span> x: x ^ (x &gt;&gt; <span class="number">1</span>)</span><br><span class="line">    constellation[natural2gray(np.arange(<span class="number">0</span>, M))] = np.exp(<span class="number">1j</span> * phase)</span><br><span class="line">    <span class="keyword">return</span> constellation</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mapping</span>(<span class="params">data, constellation</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    param:</span></span><br><span class="line"><span class="string">        - data: binary data in 1-D numpy array</span></span><br><span class="line"><span class="string">        - constellation: 1-D numpy array</span></span><br><span class="line"><span class="string">    return:</span></span><br><span class="line"><span class="string">        1-D numpy array</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    M = <span class="built_in">len</span>(constellation)</span><br><span class="line">    <span class="keyword">assert</span> np.log2(M).is_integer()</span><br><span class="line">    <span class="keyword">assert</span> <span class="built_in">len</span>(data) % np.log2(M) == <span class="number">0</span></span><br><span class="line">    data = data.reshape(-<span class="number">1</span>, <span class="built_in">int</span>(np.log2(M)))</span><br><span class="line">    mask = np.array([<span class="number">2</span>**i <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">int</span>(np.log2(M))-<span class="number">1</span>, -<span class="number">1</span>, -<span class="number">1</span>)]) <span class="comment"># [8,4,2,1]</span></span><br><span class="line">    index = np.<span class="built_in">sum</span>(data * mask, axis=<span class="number">1</span>) <span class="comment"># left first</span></span><br><span class="line">    <span class="keyword">return</span> constellation[index]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    qam_16 = qam_constellation(<span class="number">16</span>)</span><br><span class="line">    psk_4 = psk_constellation(<span class="number">4</span>)</span><br><span class="line">    <span class="built_in">print</span>(qam_16)</span><br><span class="line">    <span class="built_in">print</span>(psk_4)</span><br><span class="line">    binary_data = np.random.randint(<span class="number">0</span>, <span class="number">2</span>, <span class="number">128</span>)</span><br><span class="line">    psk_symbols = mapping(binary_data, psk_4)</span><br><span class="line">    qam_symbols = mapping(binary_data, qam_16)</span><br><span class="line">    <span class="built_in">print</span>(psk_symbols)</span><br><span class="line">    <span class="built_in">print</span>(qam_symbols)</span><br></pre></td></tr></table></figure>
+</details>
+
+
+
+<p>[^gray_code]: <span class="exturl" data-url="aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvR3JheV9jb2Rl">gray code wiki<i class="fa fa-external-link-alt"></i></span><br>[^格雷码]: <span class="exturl" data-url="aHR0cHM6Ly9vaS13aWtpLm9yZy9taXNjL2dyYXktY29kZS8=">格雷码<i class="fa fa-external-link-alt"></i></span></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%80%9A%E4%BF%A1/" rel="tag"><i class="fa fa-tag"></i> 通信</a>
+              <a href="/tags/%E8%B0%83%E5%88%B6/" rel="tag"><i class="fa fa-tag"></i> 调制</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/07/07/multipath/" rel="prev" title="时变多径信道的仿真">
+                  <i class="fa fa-chevron-left"></i> 时变多径信道的仿真
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/2023/03/11/gray-modulation/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/2023/03/11/gray-modulation/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Diracs</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">32k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">29 分钟</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+  <script class="next-config" data-name="pdf" type="application/json">{"object_url":{"url":"https://cdn.jsdelivr.net/npm/pdfobject@2.2.7/pdfobject.min.js","integrity":"sha256-ph3Dk89VmuTVXG6x/RDzk53SU9LPdAh1tpv0UvnDZ2I="},"url":"/lib/pdf/web/viewer.html"}</script>
+  <script src="/js/third-party/tags/pdf.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"destinyenvoy","repo":"destinyenvoy.github.io","client_id":"f3d3bccc3d5c3ede5e2d","client_secret":"04851501589e9e753dfdad28a03aed1511b2d088","admin_user":"destinyenvoy","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":null,"js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"10e1ec8a8549610e023e9c314da1d308"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

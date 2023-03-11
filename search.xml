@@ -263,92 +263,6 @@ LaTeX中常用的距离宏<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a>
       </tags>
   </entry>
   <entry>
-    <title>Windows下玩转R语言之配置篇:利用scoop管理软件</title>
-    <url>/2020/01/19/Windows%E4%B8%8B%E7%8E%A9%E8%BD%ACR-%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<blockquote>
-<p>本文主要介绍R语言开发环境的搭建，并利用了<code>scoop</code>这个开源项目</p>
-</blockquote>
-<p>这里推荐环境的安装使用Windows下的包管理器<code>scoop</code>
-scoop安装软件有以下优点</p>
-<ul>
-<li>集搜索、下载、安装、更新软件于一体：极大的降低了安装维护一个软件的成本，我们甚至不必在软件本身的复杂菜单中寻找那个更新按钮来更新软件自己，官方有<code>bucket</code>数据源会实时更新版本下载链接</li>
-<li>将软件干干净净的安装到电脑的「用户文件夹」下：这样既不会污染路径也不会请求不必要的权限（UAC）</li>
-<li>在卸载软件的时候，能够尽量清空软件在电脑上存储的任何数据和痕迹</li>
-<li>不会污染你的Windows系统中的环境变量（毕竟你也不想你电脑中<code>path</code>下面有很多路径吧）
-以下为利用<code>scoop</code>的安装方式</li>
-</ul>
-<span id="more"></span>
-<p><strong>以下安装顺序不能错乱</strong></p>
-<h1 id="安装scoop">1. 安装SCOOP</h1>
-<h2 id="前提">1.1. 前提</h2>
-<ul>
-<li><p>确保<code>WindowsPoweshell</code>版本大于等于3,打开您的<code>Poweshell</code>输入</p>
-<p><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$</span><span class="language-bash">psversiontable.psversion.major</span></span><br></pre></td></tr></table></figure></p></li>
-<li><p>确保您已允许PowerShell执行本地脚本 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">set-executionpolicy remotesigned -scope currentuser</span><br></pre></td></tr></table></figure></p></li>
-<li><p><span class="exturl" data-url="aHR0cHM6Ly9teS5vc2NoaW5hLm5ldC91LzIzMTExOTUvYmxvZy8zMDEzNjg3">配置安装路径与全局安装路径<i class="fa fa-external-link-alt"></i></span>（<strong>注意:自定义安装目录下不要含有中文名</strong>）
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[environment]::setEnvironmentVariable(&#x27;SCOOP&#x27;,&#x27;D:\sofeware\scoop&#x27;,&#x27;User&#x27;)</span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash"><span class="built_in">env</span>:SCOOP=<span class="string">&#x27;D:\sofeware\scoop&#x27;</span></span></span><br></pre></td></tr></table></figure></p>
-<p><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[environment]::setEnvironmentVariable(&#x27;SCOOP_GLOBAL&#x27;,&#x27;D:\sofeware&#x27;,&#x27;Machine&#x27;)</span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash"><span class="built_in">env</span>:SCOOP_GLOBAL=<span class="string">&#x27;D:\sofeware&#x27;</span></span></span><br></pre></td></tr></table></figure></p>
-<p><code>D:\sofeware\scoop</code>与<code>D:\sofeware</code>,<strong>这两个路径名不要相同可自定义，但不要相同</strong>
-## 1.2. 安装</p></li>
-<li><p>在shell中运行 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">iex (new-object net.webclient).downloadstring(&#x27;https://get.scoop.sh&#x27;)</span><br></pre></td></tr></table></figure> 等待就OK</p></li>
-<li><p>了解更多信息，输入<code>scoop</code>,或进入<span class="exturl" data-url="aHR0cHM6Ly9zY29vcC5zaC8=">官网<i class="fa fa-external-link-alt"></i></span></p></li>
-<li><p>添加<code>bucket</code> <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">scoop bucket add extras</span><br></pre></td></tr></table></figure>
-如果全球网络性差，此步可能需要很长时间</p></li>
-</ul>
-<h1 id="搭建r语言开发环境">2. 搭建R语言开发环境</h1>
-<h2 id="r">2.1. R</h2>
-<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuci1wcm9qZWN0Lm9yZy8=">R<i class="fa fa-external-link-alt"></i></span>主要用于统计学分析，及各种统计绘图,图表绘制等，是一个开源软件，因此应用较为广泛，</p>
-<ul>
-<li>安装 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">scoop install R</span><br></pre></td></tr></table></figure></li>
-<li>它的更新是个问题，一般是手动官网下载，然后文件覆盖，着实麻烦，有了<code>scoop</code>，就方便许多，具体详情见后文scoop软件的更新</li>
-</ul>
-<h2 id="安装rtools">2.2. 安装Rtools</h2>
-<p>我们在安装R语言的<code>packages</code>时，有时会遇到以下的情况，</p>
-<ul>
-<li>只有源码文件，没有编译好的二进制文件。</li>
-<li>或者有二进制文件，但版本过低</li>
-</ul>
-<p>如果我们想要使用该包，则需要自己手动build，所用到的工具就是这个<span class="exturl" data-url="aHR0cHM6Ly9jbG91ZC5yLXByb2plY3Qub3JnL2Jpbi93aW5kb3dzL1J0b29scy8=">Rtools工具<i class="fa fa-external-link-alt"></i></span>。</p>
-<p>按照常理，我们需要将这个<code>Rtools</code>添加到环境变量中，但用了<code>scoop</code>就不需要了</p>
-<figure class="highlight bat"><table><tr><td class="code"><pre><span class="line">scoop install Rtools</span><br></pre></td></tr></table></figure>
-<p><strong>在安装Rstudio之前，为了保险，先关闭所有的终端<code>shell</code>and<code>cmd</code></strong></p>
-<h2 id="安装ide--rstudio">2.3. 安装IDE--Rstudio</h2>
-<ul>
-<li><p>编写R，怎么能不要一个好的编辑器呢，（如果你觉得那个R自带的编辑器够用,可以不用安装Rstudio）</p></li>
-<li><p>顺便说一下，<code>Rstudio</code>还可以进行<strong>简单的科技排版</strong>与<strong>slides</strong>绘制呢，更多有趣的功能等待你去挖掘</p></li>
-<li><p>安装 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">scoop install rstudio</span><br></pre></td></tr></table></figure></p></li>
-<li><p>到此，你就可以愉快的玩R了</p></li>
-</ul>
-<h1 id="scoop软件的使用问题">3. scoop软件的使用问题</h1>
-<h2 id="命令使用">3.1 命令使用</h2>
-<ul>
-<li>运行命令<code>scoop update *</code>或<code>scoop update &lt;app name&gt;</code></li>
-<li>移除软件旧版本<code>scoop cleanup *</code></li>
-<li>清除安装缓存文件<code>scoop cache rm *</code></li>
-</ul>
-<h2 id="基于scoop下载的其他软件推荐">3.2
-基于scoop下载的其他软件推荐</h2>
-<p>这里推荐几个好玩的软件</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#本地文件检索</span><br><span class="line">scoop install everything</span><br><span class="line"></span><br><span class="line"># 开启管理员权限</span><br><span class="line">scoop install sudo</span><br><span class="line"></span><br><span class="line"># 程序员笔记撰写</span><br><span class="line">scoop install vnote</span><br><span class="line"></span><br><span class="line"># B站视频下载或有关视频下载--基于命令行</span><br><span class="line">scoop install youtube-dl</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 卸载Windows软件，也可以强力卸载微软商店安装的软件</span><br><span class="line">scoop install geekuninstaller</span><br><span class="line"></span><br><span class="line"># 视频播放器，支持绝大多数视频格式</span><br><span class="line">scoop install vlc</span><br></pre></td></tr></table></figure>
-<h2 id="scoop下载软件的全局安装问题">3.3
-scoop下载软件的全局安装问题</h2>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">#注意：有些软件只能选择全局安装，例如</span><br><span class="line"></span><br><span class="line">#视频录播软件</span><br><span class="line"></span><br><span class="line">sudo scoop install obs-studio -g</span><br><span class="line"></span><br><span class="line"># 和PS有相似功能，但占用CPU资源少，开源免费的图形处理开源软件GIMP</span><br><span class="line"></span><br><span class="line">sudo scoop install gimp -g</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<blockquote>
-<ul>
-<li><p><span class="exturl" data-url="aHR0cHM6Ly9zc3BhaS5jb20vcG9zdC81MjQ5Ng==">「一行代码」搞定软件安装卸载，用
-Scoop 管理你的 Windows 软件<i class="fa fa-external-link-alt"></i></span></p></li>
-<li><p><span class="exturl" data-url="aHR0cHM6Ly9teS5vc2NoaW5hLm5ldC91LzIzMTExOTUvYmxvZy8zMDEzNjg3">windows包管理工具：scoop
-安装，常用的配置及命令<i class="fa fa-external-link-alt"></i></span></p></li>
-</ul>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>Blog</tag>
-        <tag>R</tag>
-        <tag>scoop</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Windows下本地调试:基于GitHub Pages + Jekyll 创建的个人博客</title>
     <url>/2020/01/16/Windows%E4%B8%8B%E6%9C%AC%E5%9C%B0%E8%B0%83%E8%AF%95%E5%8D%9A%E5%AE%A2/</url>
     <content><![CDATA[<blockquote>
@@ -458,6 +372,92 @@ aria-hidden="true">使用GithubDesktop更新个人博客</figcaption>
       <tags>
         <tag>本地调试</tag>
         <tag>Github</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Windows下玩转R语言之配置篇:利用scoop管理软件</title>
+    <url>/2020/01/19/Windows%E4%B8%8B%E7%8E%A9%E8%BD%ACR-%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<blockquote>
+<p>本文主要介绍R语言开发环境的搭建，并利用了<code>scoop</code>这个开源项目</p>
+</blockquote>
+<p>这里推荐环境的安装使用Windows下的包管理器<code>scoop</code>
+scoop安装软件有以下优点</p>
+<ul>
+<li>集搜索、下载、安装、更新软件于一体：极大的降低了安装维护一个软件的成本，我们甚至不必在软件本身的复杂菜单中寻找那个更新按钮来更新软件自己，官方有<code>bucket</code>数据源会实时更新版本下载链接</li>
+<li>将软件干干净净的安装到电脑的「用户文件夹」下：这样既不会污染路径也不会请求不必要的权限（UAC）</li>
+<li>在卸载软件的时候，能够尽量清空软件在电脑上存储的任何数据和痕迹</li>
+<li>不会污染你的Windows系统中的环境变量（毕竟你也不想你电脑中<code>path</code>下面有很多路径吧）
+以下为利用<code>scoop</code>的安装方式</li>
+</ul>
+<span id="more"></span>
+<p><strong>以下安装顺序不能错乱</strong></p>
+<h1 id="安装scoop">1. 安装SCOOP</h1>
+<h2 id="前提">1.1. 前提</h2>
+<ul>
+<li><p>确保<code>WindowsPoweshell</code>版本大于等于3,打开您的<code>Poweshell</code>输入</p>
+<p><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$</span><span class="language-bash">psversiontable.psversion.major</span></span><br></pre></td></tr></table></figure></p></li>
+<li><p>确保您已允许PowerShell执行本地脚本 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">set-executionpolicy remotesigned -scope currentuser</span><br></pre></td></tr></table></figure></p></li>
+<li><p><span class="exturl" data-url="aHR0cHM6Ly9teS5vc2NoaW5hLm5ldC91LzIzMTExOTUvYmxvZy8zMDEzNjg3">配置安装路径与全局安装路径<i class="fa fa-external-link-alt"></i></span>（<strong>注意:自定义安装目录下不要含有中文名</strong>）
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[environment]::setEnvironmentVariable(&#x27;SCOOP&#x27;,&#x27;D:\sofeware\scoop&#x27;,&#x27;User&#x27;)</span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash"><span class="built_in">env</span>:SCOOP=<span class="string">&#x27;D:\sofeware\scoop&#x27;</span></span></span><br></pre></td></tr></table></figure></p>
+<p><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[environment]::setEnvironmentVariable(&#x27;SCOOP_GLOBAL&#x27;,&#x27;D:\sofeware&#x27;,&#x27;Machine&#x27;)</span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash"><span class="built_in">env</span>:SCOOP_GLOBAL=<span class="string">&#x27;D:\sofeware&#x27;</span></span></span><br></pre></td></tr></table></figure></p>
+<p><code>D:\sofeware\scoop</code>与<code>D:\sofeware</code>,<strong>这两个路径名不要相同可自定义，但不要相同</strong>
+## 1.2. 安装</p></li>
+<li><p>在shell中运行 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">iex (new-object net.webclient).downloadstring(&#x27;https://get.scoop.sh&#x27;)</span><br></pre></td></tr></table></figure> 等待就OK</p></li>
+<li><p>了解更多信息，输入<code>scoop</code>,或进入<span class="exturl" data-url="aHR0cHM6Ly9zY29vcC5zaC8=">官网<i class="fa fa-external-link-alt"></i></span></p></li>
+<li><p>添加<code>bucket</code> <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">scoop bucket add extras</span><br></pre></td></tr></table></figure>
+如果全球网络性差，此步可能需要很长时间</p></li>
+</ul>
+<h1 id="搭建r语言开发环境">2. 搭建R语言开发环境</h1>
+<h2 id="r">2.1. R</h2>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cuci1wcm9qZWN0Lm9yZy8=">R<i class="fa fa-external-link-alt"></i></span>主要用于统计学分析，及各种统计绘图,图表绘制等，是一个开源软件，因此应用较为广泛，</p>
+<ul>
+<li>安装 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">scoop install R</span><br></pre></td></tr></table></figure></li>
+<li>它的更新是个问题，一般是手动官网下载，然后文件覆盖，着实麻烦，有了<code>scoop</code>，就方便许多，具体详情见后文scoop软件的更新</li>
+</ul>
+<h2 id="安装rtools">2.2. 安装Rtools</h2>
+<p>我们在安装R语言的<code>packages</code>时，有时会遇到以下的情况，</p>
+<ul>
+<li>只有源码文件，没有编译好的二进制文件。</li>
+<li>或者有二进制文件，但版本过低</li>
+</ul>
+<p>如果我们想要使用该包，则需要自己手动build，所用到的工具就是这个<span class="exturl" data-url="aHR0cHM6Ly9jbG91ZC5yLXByb2plY3Qub3JnL2Jpbi93aW5kb3dzL1J0b29scy8=">Rtools工具<i class="fa fa-external-link-alt"></i></span>。</p>
+<p>按照常理，我们需要将这个<code>Rtools</code>添加到环境变量中，但用了<code>scoop</code>就不需要了</p>
+<figure class="highlight bat"><table><tr><td class="code"><pre><span class="line">scoop install Rtools</span><br></pre></td></tr></table></figure>
+<p><strong>在安装Rstudio之前，为了保险，先关闭所有的终端<code>shell</code>and<code>cmd</code></strong></p>
+<h2 id="安装ide--rstudio">2.3. 安装IDE--Rstudio</h2>
+<ul>
+<li><p>编写R，怎么能不要一个好的编辑器呢，（如果你觉得那个R自带的编辑器够用,可以不用安装Rstudio）</p></li>
+<li><p>顺便说一下，<code>Rstudio</code>还可以进行<strong>简单的科技排版</strong>与<strong>slides</strong>绘制呢，更多有趣的功能等待你去挖掘</p></li>
+<li><p>安装 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">scoop install rstudio</span><br></pre></td></tr></table></figure></p></li>
+<li><p>到此，你就可以愉快的玩R了</p></li>
+</ul>
+<h1 id="scoop软件的使用问题">3. scoop软件的使用问题</h1>
+<h2 id="命令使用">3.1 命令使用</h2>
+<ul>
+<li>运行命令<code>scoop update *</code>或<code>scoop update &lt;app name&gt;</code></li>
+<li>移除软件旧版本<code>scoop cleanup *</code></li>
+<li>清除安装缓存文件<code>scoop cache rm *</code></li>
+</ul>
+<h2 id="基于scoop下载的其他软件推荐">3.2
+基于scoop下载的其他软件推荐</h2>
+<p>这里推荐几个好玩的软件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#本地文件检索</span><br><span class="line">scoop install everything</span><br><span class="line"></span><br><span class="line"># 开启管理员权限</span><br><span class="line">scoop install sudo</span><br><span class="line"></span><br><span class="line"># 程序员笔记撰写</span><br><span class="line">scoop install vnote</span><br><span class="line"></span><br><span class="line"># B站视频下载或有关视频下载--基于命令行</span><br><span class="line">scoop install youtube-dl</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 卸载Windows软件，也可以强力卸载微软商店安装的软件</span><br><span class="line">scoop install geekuninstaller</span><br><span class="line"></span><br><span class="line"># 视频播放器，支持绝大多数视频格式</span><br><span class="line">scoop install vlc</span><br></pre></td></tr></table></figure>
+<h2 id="scoop下载软件的全局安装问题">3.3
+scoop下载软件的全局安装问题</h2>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">#注意：有些软件只能选择全局安装，例如</span><br><span class="line"></span><br><span class="line">#视频录播软件</span><br><span class="line"></span><br><span class="line">sudo scoop install obs-studio -g</span><br><span class="line"></span><br><span class="line"># 和PS有相似功能，但占用CPU资源少，开源免费的图形处理开源软件GIMP</span><br><span class="line"></span><br><span class="line">sudo scoop install gimp -g</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li><p><span class="exturl" data-url="aHR0cHM6Ly9zc3BhaS5jb20vcG9zdC81MjQ5Ng==">「一行代码」搞定软件安装卸载，用
+Scoop 管理你的 Windows 软件<i class="fa fa-external-link-alt"></i></span></p></li>
+<li><p><span class="exturl" data-url="aHR0cHM6Ly9teS5vc2NoaW5hLm5ldC91LzIzMTExOTUvYmxvZy8zMDEzNjg3">windows包管理工具：scoop
+安装，常用的配置及命令<i class="fa fa-external-link-alt"></i></span></p></li>
+</ul>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>Blog</tag>
+        <tag>R</tag>
+        <tag>scoop</tag>
       </tags>
   </entry>
   <entry>
@@ -590,6 +590,104 @@ TikZ
         <tag>Tikz</tag>
         <tag>论文</tag>
         <tag>绘图</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>星座图中格雷映射及其实现</title>
+    <url>/2023/03/11/gray-modulation/</url>
+    <content><![CDATA[<blockquote>
+<p>在数字信号的调制中，AWGN信道下，星座图一般是采用gray code 进行编码。</p>
+<p>本文讲述格雷码的概念及其分析在星座图中格雷编码映射的必要性，最后给出其Python 代码实现。</p>
+</blockquote>
+<span id="more"></span>
+
+<h1 id="格雷码"><a href="#格雷码" class="headerlink" title="格雷码"></a>格雷码</h1><p>先了解一下gray code 的概念：格雷码是二进制数字系统的一种排序方式，使得两个连续值在比特级别上仅仅相差一位。</p>
+<p>例如：十进制的<code>1</code> 在自然二进制中的表示通常为<code>001</code>，而<code>2</code>将被编码为<code>010</code>。对应的格雷码为<code>001</code>和<code>011</code>。这样，将一个值从<code>1</code>递增至<code>2</code><br>对应的编码仅仅需要更改一位比特，而不是两位。</p>
+<p>格雷码广泛用于数字通信系统中的纠错[^gray_code]。</p>
+<ul>
+<li>$k$ 位二进制数的格雷码序列可以当作 $k$ 维空间中的一个超立方体（二维里的正方形，一维里的单位向量)顶点的哈密尔顿回路，其中格雷码的每一位代表一个维度的坐标。</li>
+</ul>
+<h1 id="格雷星座映射"><a href="#格雷星座映射" class="headerlink" title="格雷星座映射"></a>格雷星座映射</h1><p>在QAM等数字调制方案中，数据通常以4 位或更多位的符号传输，信号的星座图被安排为使得相邻星座点传送的位模式仅相差一位。通过将其与能够纠正单个比特错误的信道编码结合，接收器可以纠正任何导致星座点偏离到相邻点区域的传输错误。这使得传输系统不易受噪声影响。</p>
+<p>例如4QAM信号，其自然映射和格雷星座映射为:</p>
+<table>
+<thead>
+<tr>
+<th>:–:</th>
+<th>:–:</th>
+<th>:–:</th>
+<th>:–:</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据比特</td>
+<td>十进制</td>
+<td>自然映射</td>
+<td>格雷映射</td>
+</tr>
+<tr>
+<td><code>00</code></td>
+<td><code>0</code></td>
+<td><code>-1-1j</code></td>
+<td><code>-1-1j</code></td>
+</tr>
+<tr>
+<td><code>01</code></td>
+<td><code>1</code></td>
+<td><code>-1+1j</code></td>
+<td><code>-1+1j</code></td>
+</tr>
+<tr>
+<td><code>10</code></td>
+<td><code>2</code></td>
+<td><code>1+1j</code></td>
+<td><code>1-1j</code></td>
+</tr>
+<tr>
+<td><code>11</code></td>
+<td><code>3</code></td>
+<td><code>1-1j</code></td>
+<td><code>1+1j</code></td>
+</tr>
+</tbody></table>
+<p>假设AWGN信道下，某码元发送<code>10</code> 数据比特，接收端采用最大似然判决 $y&#x3D;x+n$, $\hat{x}&#x3D;\arg\min_x ||y-x||$ ，采用不同映射，有以下情形：</p>
+<ul>
+<li>自然：对应发送<code>1+1j</code> ，有$P_1$ 的概率被判决为<code>1-1j</code>(即判为<code>11</code>,误比特数1个), $P_1$的 概率被判决为<code>01</code>（误比特2个）,$P_2(P_2&lt;P_1)$ 的概率被判决为<code>00</code>(误比特1个) ，那么平均误比特$3P_1+P_2$ 个</li>
+<li>格雷：对应发送<code>1-1j</code>,$P_1$ 的概率判决为<code>11</code>和<code>00</code>，均误比特<code>1</code>个，$P_2$的概率判为<code>01</code>,误比特$2P_1+2P_2$</li>
+<li>$3P_1+P_2&gt;2P_1+2P_2$</li>
+</ul>
+<p>发送其余数据比特时，情形类似。可以发现AWGN信道下格雷映射方案的<code>BER</code>性能是优于自然映射的。相比于正常二进制映射，使用格雷码可以降低总体错误率。这也是星座映射采用格雷映射的原因。</p>
+<h1 id="格雷码的构造-格雷码"><a href="#格雷码的构造-格雷码" class="headerlink" title="格雷码的构造[^格雷码]"></a>格雷码的构造[^格雷码]</h1><p>我们观察以下 $n$ 维的二进制和其格雷码 $G(n)$。如果 $G(n)$ 的二进制第 $i$ 位为1，仅当 $n$ 的二进制第 $i$ 位为 <code>1</code>,第$i+1$ 位为 $0$ 或者 第$i$ 位为 <code>0</code> ,第 $i+1$ 位为 <code>1</code>。于是可以当成一个异或运算：</p>
+<p>$$G(n)&#x3D;n\oplus \lfloor\frac{n}{2}\rfloor$$</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">g</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123; <span class="keyword">return</span> n ^ (n &gt;&gt; <span class="number">1</span>); &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><ul>
+<li>二维QAM格雷映射基于这样一种思想: 如果每一维是格雷映射的，那么他们的笛卡尔积也是格雷的。即两个gray mapping 的PAM映射组合起来就是QAM gray mapping.</li>
+<li>二维的PSK gray mapping 和一维PAM gray mapping 类似。</li>
+</ul>
+<div class="note info no-icon"><p>点击左侧三角可展开代码</p>
+</div>
+
+
+
+<details>
+<summary>Python 实现</summary>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">qam_constellation</span>(<span class="params">M,normalize=<span class="literal">False</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot; M must be 2^k ,where k is an even integer</span></span><br><span class="line"><span class="string">    gray mapping</span></span><br><span class="line"><span class="string">    param:</span></span><br><span class="line"><span class="string">        - M: the size of qam set</span></span><br><span class="line"><span class="string">        - normalize: normalize the average energy qam symbols unit</span></span><br><span class="line"><span class="string">    return:</span></span><br><span class="line"><span class="string">        1-D numpy array</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">assert</span> np.log2(M).is_integer()</span><br><span class="line">    m = <span class="built_in">int</span>(np.sqrt(M))</span><br><span class="line">    x = np.zeros(m,np.int32) <span class="comment"># gray mapping binding to natural number</span></span><br><span class="line">    y = np.zeros(m,np.int32) </span><br><span class="line">    <span class="comment"># mappping natural number to gray code in octal</span></span><br><span class="line">    natural2gray = <span class="keyword">lambda</span> x: x ^ (x &gt;&gt; <span class="number">1</span>)</span><br><span class="line">    x[natural2gray(np.arange(<span class="number">0</span>, m))] =  np.arange(<span class="number">0</span>, <span class="number">2</span>*m,<span class="number">2</span>) -m+<span class="number">1</span></span><br><span class="line">    y[natural2gray(np.arange(<span class="number">0</span>, m))] =  np.arange(<span class="number">0</span>, <span class="number">2</span>*m,<span class="number">2</span>) -m+<span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    constellation = np.zeros((m, m), dtype=np.cfloat)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(m):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(m):</span><br><span class="line">            constellation[i][j] = (x[i]+<span class="number">1j</span>* y[j])</span><br><span class="line">    <span class="keyword">if</span> normalize:</span><br><span class="line">        <span class="keyword">return</span> constellation.flatten()/(np.linalg.norm(constellation)/m)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> constellation.flatten()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">psk_constellation</span>(<span class="params">M</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot; </span></span><br><span class="line"><span class="string">    gray mapping</span></span><br><span class="line"><span class="string">    param:</span></span><br><span class="line"><span class="string">        - M: the size of psk set</span></span><br><span class="line"><span class="string">        - normalize: normalize the average energy qam symbols unit</span></span><br><span class="line"><span class="string">    return:</span></span><br><span class="line"><span class="string">        1-D numpy array</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    phase = np.arange(<span class="number">0</span>, M) * <span class="number">2</span> * np.pi / M</span><br><span class="line">    constellation = np.zeros(M, dtype=np.cfloat)</span><br><span class="line">    natural2gray = <span class="keyword">lambda</span> x: x ^ (x &gt;&gt; <span class="number">1</span>)</span><br><span class="line">    constellation[natural2gray(np.arange(<span class="number">0</span>, M))] = np.exp(<span class="number">1j</span> * phase)</span><br><span class="line">    <span class="keyword">return</span> constellation</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mapping</span>(<span class="params">data, constellation</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    param:</span></span><br><span class="line"><span class="string">        - data: binary data in 1-D numpy array</span></span><br><span class="line"><span class="string">        - constellation: 1-D numpy array</span></span><br><span class="line"><span class="string">    return:</span></span><br><span class="line"><span class="string">        1-D numpy array</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    M = <span class="built_in">len</span>(constellation)</span><br><span class="line">    <span class="keyword">assert</span> np.log2(M).is_integer()</span><br><span class="line">    <span class="keyword">assert</span> <span class="built_in">len</span>(data) % np.log2(M) == <span class="number">0</span></span><br><span class="line">    data = data.reshape(-<span class="number">1</span>, <span class="built_in">int</span>(np.log2(M)))</span><br><span class="line">    mask = np.array([<span class="number">2</span>**i <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">int</span>(np.log2(M))-<span class="number">1</span>, -<span class="number">1</span>, -<span class="number">1</span>)]) <span class="comment"># [8,4,2,1]</span></span><br><span class="line">    index = np.<span class="built_in">sum</span>(data * mask, axis=<span class="number">1</span>) <span class="comment"># left first</span></span><br><span class="line">    <span class="keyword">return</span> constellation[index]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    qam_16 = qam_constellation(<span class="number">16</span>)</span><br><span class="line">    psk_4 = psk_constellation(<span class="number">4</span>)</span><br><span class="line">    <span class="built_in">print</span>(qam_16)</span><br><span class="line">    <span class="built_in">print</span>(psk_4)</span><br><span class="line">    binary_data = np.random.randint(<span class="number">0</span>, <span class="number">2</span>, <span class="number">128</span>)</span><br><span class="line">    psk_symbols = mapping(binary_data, psk_4)</span><br><span class="line">    qam_symbols = mapping(binary_data, qam_16)</span><br><span class="line">    <span class="built_in">print</span>(psk_symbols)</span><br><span class="line">    <span class="built_in">print</span>(qam_symbols)</span><br></pre></td></tr></table></figure>
+</details>
+
+
+
+<p>[^gray_code]: <span class="exturl" data-url="aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvR3JheV9jb2Rl">gray code wiki<i class="fa fa-external-link-alt"></i></span><br>[^格雷码]: <span class="exturl" data-url="aHR0cHM6Ly9vaS13aWtpLm9yZy9taXNjL2dyYXktY29kZS8=">格雷码<i class="fa fa-external-link-alt"></i></span></p>
+]]></content>
+      <tags>
+        <tag>通信</tag>
+        <tag>调制</tag>
       </tags>
   </entry>
   <entry>
