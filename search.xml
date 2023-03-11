@@ -461,6 +461,144 @@ Scoop 管理你的 Windows 软件<i class="fa fa-external-link-alt"></i></span><
       </tags>
   </entry>
   <entry>
+    <title>星座图中格雷映射及其实现</title>
+    <url>/2023/03/11/gray-modulation/</url>
+    <content><![CDATA[<blockquote>
+<p>在数字信号的调制中，AWGN信道下，星座图一般是采用gray code
+进行编码。</p>
+<p>本文讲述格雷码的概念及其分析在星座图中格雷编码映射的必要性，最后给出其Python
+代码实现。</p>
+</blockquote>
+<span id="more"></span>
+<h1 id="格雷码">格雷码</h1>
+<p>先了解一下gray code
+的概念：格雷码是二进制数字系统的一种排序方式，使得两个连续值在比特级别上仅仅相差一位。</p>
+<p>例如：十进制的<code>1</code>
+在自然二进制中的表示通常为<code>001</code>，而<code>2</code>将被编码为<code>010</code>。对应的格雷码为<code>001</code>和<code>011</code>。这样，将一个值从<code>1</code>递增至<code>2</code>
+对应的编码仅仅需要更改一位比特，而不是两位。</p>
+<p>格雷码广泛用于数字通信系统中的纠错<a href="#fn1" class="footnote-ref"
+id="fnref1" role="doc-noteref"><sup>1</sup></a>。</p>
+<ul>
+<li><span class="math inline">\(k\)</span>
+位二进制数的格雷码序列可以当作 <span class="math inline">\(k\)</span>
+维空间中的一个超立方体（二维里的正方形，一维里的单位向量)顶点的哈密尔顿回路，其中格雷码的每一位代表一个维度的坐标。</li>
+</ul>
+<h1 id="格雷星座映射">格雷星座映射</h1>
+<p>在QAM等数字调制方案中，数据通常以4
+位或更多位的符号传输，信号的星座图被安排为使得相邻星座点传送的位模式仅相差一位。通过将其与能够纠正单个比特错误的信道编码结合，接收器可以纠正任何导致星座点偏离到相邻点区域的传输错误。这使得传输系统不易受噪声影响。</p>
+<p>例如4QAM信号，其自然映射和格雷星座映射为:</p>
+<table>
+<thead>
+<tr class="header">
+<th>:--:</th>
+<th>:--:</th>
+<th>:--:</th>
+<th>:--:</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>数据比特</td>
+<td>十进制</td>
+<td>自然映射</td>
+<td>格雷映射</td>
+</tr>
+<tr class="even">
+<td><code>00</code></td>
+<td><code>0</code></td>
+<td><code>-1-1j</code></td>
+<td><code>-1-1j</code></td>
+</tr>
+<tr class="odd">
+<td><code>01</code></td>
+<td><code>1</code></td>
+<td><code>-1+1j</code></td>
+<td><code>-1+1j</code></td>
+</tr>
+<tr class="even">
+<td><code>10</code></td>
+<td><code>2</code></td>
+<td><code>1+1j</code></td>
+<td><code>1-1j</code></td>
+</tr>
+<tr class="odd">
+<td><code>11</code></td>
+<td><code>3</code></td>
+<td><code>1-1j</code></td>
+<td><code>1+1j</code></td>
+</tr>
+</tbody>
+</table>
+<p>假设AWGN信道下，某码元发送<code>10</code>
+数据比特，接收端采用最大似然判决 <span
+class="math inline">\(y=x+n\)</span>, <span
+class="math inline">\(\hat{x}=\arg\min_x ||y-x||\)</span>
+，采用不同映射，有以下情形：</p>
+<ul>
+<li>自然：对应发送<code>1+1j</code> ，有<span
+class="math inline">\(P_1\)</span>
+的概率被判决为<code>1-1j</code>(即判为<code>11</code>,误比特数1个),
+<span class="math inline">\(P_1\)</span>的
+概率被判决为<code>01</code>（误比特2个）,<span
+class="math inline">\(P_2(P_2&lt;P_1)\)</span>
+的概率被判决为<code>00</code>(误比特1个) ，那么平均误比特<span
+class="math inline">\(3P_1+P_2\)</span> 个</li>
+<li>格雷：对应发送<code>1-1j</code>,<span
+class="math inline">\(P_1\)</span>
+的概率判决为<code>11</code>和<code>00</code>，均误比特<code>1</code>个，<span
+class="math inline">\(P_2\)</span>的概率判为<code>01</code>,误比特<span
+class="math inline">\(2P_1+2P_2\)</span></li>
+<li><span class="math inline">\(3P_1+P_2&gt;2P_1+2P_2\)</span></li>
+</ul>
+<p>发送其余数据比特时，情形类似。可以发现AWGN信道下格雷映射方案的<code>BER</code>性能是优于自然映射的。相比于正常二进制映射，使用格雷码可以降低总体错误率。这也是星座映射采用格雷映射的原因。</p>
+<h1 id="格雷码的构造ge">格雷码的构造<a href="#fn2" class="footnote-ref"
+id="fnref2" role="doc-noteref"><sup>2</sup></a></h1>
+<p>我们观察以下 <span class="math inline">\(n\)</span>
+维的二进制和其格雷码 <span class="math inline">\(G(n)\)</span>。如果
+<span class="math inline">\(G(n)\)</span> 的二进制第 <span
+class="math inline">\(i\)</span> 位为1，仅当 <span
+class="math inline">\(n\)</span> 的二进制第 <span
+class="math inline">\(i\)</span> 位为 <code>1</code>,第<span
+class="math inline">\(i+1\)</span> 位为 <span
+class="math inline">\(0\)</span> 或者 第<span
+class="math inline">\(i\)</span> 位为 <code>0</code> ,第 <span
+class="math inline">\(i+1\)</span> 位为
+<code>1</code>。于是可以当成一个异或运算：</p>
+<p><span class="math display">\[G(n)=n\oplus
+\lfloor\frac{n}{2}\rfloor\]</span></p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">g</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123; <span class="keyword">return</span> n ^ (n &gt;&gt; <span class="number">1</span>); &#125;</span><br></pre></td></tr></table></figure>
+<h1 id="代码实现">代码实现</h1>
+<ul>
+<li>二维QAM格雷映射基于这样一种思想:
+如果每一维是格雷映射的，那么他们的笛卡尔积也是格雷的。即两个gray mapping
+的PAM映射组合起来就是QAM gray mapping.</li>
+<li>二维的PSK gray mapping 和一维PAM gray mapping 类似。</li>
+</ul>
+<div class="note info no-icon"><p>点击左侧三角可展开代码</p>
+</div>
+<details>
+<summary>
+Python 实现
+</summary>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">qam_constellation</span>(<span class="params">M,normalize=<span class="literal">False</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot; M must be 2^k ,where k is an even integer</span></span><br><span class="line"><span class="string">    gray mapping</span></span><br><span class="line"><span class="string">    param:</span></span><br><span class="line"><span class="string">        - M: the size of qam set</span></span><br><span class="line"><span class="string">        - normalize: normalize the average energy qam symbols unit</span></span><br><span class="line"><span class="string">    return:</span></span><br><span class="line"><span class="string">        1-D numpy array</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">assert</span> np.log2(M).is_integer()</span><br><span class="line">    m = <span class="built_in">int</span>(np.sqrt(M))</span><br><span class="line">    x = np.zeros(m,np.int32) <span class="comment"># gray mapping binding to natural number</span></span><br><span class="line">    y = np.zeros(m,np.int32) </span><br><span class="line">    <span class="comment"># mappping natural number to gray code in octal</span></span><br><span class="line">    natural2gray = <span class="keyword">lambda</span> x: x ^ (x &gt;&gt; <span class="number">1</span>)</span><br><span class="line">    x[natural2gray(np.arange(<span class="number">0</span>, m))] =  np.arange(<span class="number">0</span>, <span class="number">2</span>*m,<span class="number">2</span>) -m+<span class="number">1</span></span><br><span class="line">    y[natural2gray(np.arange(<span class="number">0</span>, m))] =  np.arange(<span class="number">0</span>, <span class="number">2</span>*m,<span class="number">2</span>) -m+<span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    constellation = np.zeros((m, m), dtype=np.cfloat)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(m):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(m):</span><br><span class="line">            constellation[i][j] = (x[i]+<span class="number">1j</span>* y[j])</span><br><span class="line">    <span class="keyword">if</span> normalize:</span><br><span class="line">        <span class="keyword">return</span> constellation.flatten()/(np.linalg.norm(constellation)/m)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> constellation.flatten()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">psk_constellation</span>(<span class="params">M</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot; </span></span><br><span class="line"><span class="string">    gray mapping</span></span><br><span class="line"><span class="string">    param:</span></span><br><span class="line"><span class="string">        - M: the size of psk set</span></span><br><span class="line"><span class="string">        - normalize: normalize the average energy qam symbols unit</span></span><br><span class="line"><span class="string">    return:</span></span><br><span class="line"><span class="string">        1-D numpy array</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    phase = np.arange(<span class="number">0</span>, M) * <span class="number">2</span> * np.pi / M</span><br><span class="line">    constellation = np.zeros(M, dtype=np.cfloat)</span><br><span class="line">    natural2gray = <span class="keyword">lambda</span> x: x ^ (x &gt;&gt; <span class="number">1</span>)</span><br><span class="line">    constellation[natural2gray(np.arange(<span class="number">0</span>, M))] = np.exp(<span class="number">1j</span> * phase)</span><br><span class="line">    <span class="keyword">return</span> constellation</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mapping</span>(<span class="params">data, constellation</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    param:</span></span><br><span class="line"><span class="string">        - data: binary data in 1-D numpy array</span></span><br><span class="line"><span class="string">        - constellation: 1-D numpy array</span></span><br><span class="line"><span class="string">    return:</span></span><br><span class="line"><span class="string">        1-D numpy array</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    M = <span class="built_in">len</span>(constellation)</span><br><span class="line">    <span class="keyword">assert</span> np.log2(M).is_integer()</span><br><span class="line">    <span class="keyword">assert</span> <span class="built_in">len</span>(data) % np.log2(M) == <span class="number">0</span></span><br><span class="line">    data = data.reshape(-<span class="number">1</span>, <span class="built_in">int</span>(np.log2(M)))</span><br><span class="line">    mask = np.array([<span class="number">2</span>**i <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">int</span>(np.log2(M))-<span class="number">1</span>, -<span class="number">1</span>, -<span class="number">1</span>)]) <span class="comment"># [8,4,2,1]</span></span><br><span class="line">    index = np.<span class="built_in">sum</span>(data * mask, axis=<span class="number">1</span>) <span class="comment"># left first</span></span><br><span class="line">    <span class="keyword">return</span> constellation[index]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    qam_16 = qam_constellation(<span class="number">16</span>)</span><br><span class="line">    psk_4 = psk_constellation(<span class="number">4</span>)</span><br><span class="line">    <span class="built_in">print</span>(qam_16)</span><br><span class="line">    <span class="built_in">print</span>(psk_4)</span><br><span class="line">    binary_data = np.random.randint(<span class="number">0</span>, <span class="number">2</span>, <span class="number">128</span>)</span><br><span class="line">    psk_symbols = mapping(binary_data, psk_4)</span><br><span class="line">    qam_symbols = mapping(binary_data, qam_16)</span><br><span class="line">    <span class="built_in">print</span>(psk_symbols)</span><br><span class="line">    <span class="built_in">print</span>(qam_symbols)</span><br></pre></td></tr></table></figure>
+</details>
+<section class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p><span class="exturl" data-url="aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvR3JheV9jb2Rl">gray code wiki<i class="fa fa-external-link-alt"></i></span><a
+href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p><span class="exturl" data-url="aHR0cHM6Ly9vaS13aWtpLm9yZy9taXNjL2dyYXktY29kZS8=">格雷码<i class="fa fa-external-link-alt"></i></span><a href="#fnref2"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+]]></content>
+      <tags>
+        <tag>通信</tag>
+        <tag>调制</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>几种常用的论文绘图工具比较:主要介绍Tikz</title>
     <url>/2019/11/20/draw-pretty-fig/</url>
     <content><![CDATA[<blockquote>
@@ -590,104 +728,6 @@ TikZ
         <tag>Tikz</tag>
         <tag>论文</tag>
         <tag>绘图</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>星座图中格雷映射及其实现</title>
-    <url>/2023/03/11/gray-modulation/</url>
-    <content><![CDATA[<blockquote>
-<p>在数字信号的调制中，AWGN信道下，星座图一般是采用gray code 进行编码。</p>
-<p>本文讲述格雷码的概念及其分析在星座图中格雷编码映射的必要性，最后给出其Python 代码实现。</p>
-</blockquote>
-<span id="more"></span>
-
-<h1 id="格雷码"><a href="#格雷码" class="headerlink" title="格雷码"></a>格雷码</h1><p>先了解一下gray code 的概念：格雷码是二进制数字系统的一种排序方式，使得两个连续值在比特级别上仅仅相差一位。</p>
-<p>例如：十进制的<code>1</code> 在自然二进制中的表示通常为<code>001</code>，而<code>2</code>将被编码为<code>010</code>。对应的格雷码为<code>001</code>和<code>011</code>。这样，将一个值从<code>1</code>递增至<code>2</code><br>对应的编码仅仅需要更改一位比特，而不是两位。</p>
-<p>格雷码广泛用于数字通信系统中的纠错[^gray_code]。</p>
-<ul>
-<li>$k$ 位二进制数的格雷码序列可以当作 $k$ 维空间中的一个超立方体（二维里的正方形，一维里的单位向量)顶点的哈密尔顿回路，其中格雷码的每一位代表一个维度的坐标。</li>
-</ul>
-<h1 id="格雷星座映射"><a href="#格雷星座映射" class="headerlink" title="格雷星座映射"></a>格雷星座映射</h1><p>在QAM等数字调制方案中，数据通常以4 位或更多位的符号传输，信号的星座图被安排为使得相邻星座点传送的位模式仅相差一位。通过将其与能够纠正单个比特错误的信道编码结合，接收器可以纠正任何导致星座点偏离到相邻点区域的传输错误。这使得传输系统不易受噪声影响。</p>
-<p>例如4QAM信号，其自然映射和格雷星座映射为:</p>
-<table>
-<thead>
-<tr>
-<th>:–:</th>
-<th>:–:</th>
-<th>:–:</th>
-<th>:–:</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>数据比特</td>
-<td>十进制</td>
-<td>自然映射</td>
-<td>格雷映射</td>
-</tr>
-<tr>
-<td><code>00</code></td>
-<td><code>0</code></td>
-<td><code>-1-1j</code></td>
-<td><code>-1-1j</code></td>
-</tr>
-<tr>
-<td><code>01</code></td>
-<td><code>1</code></td>
-<td><code>-1+1j</code></td>
-<td><code>-1+1j</code></td>
-</tr>
-<tr>
-<td><code>10</code></td>
-<td><code>2</code></td>
-<td><code>1+1j</code></td>
-<td><code>1-1j</code></td>
-</tr>
-<tr>
-<td><code>11</code></td>
-<td><code>3</code></td>
-<td><code>1-1j</code></td>
-<td><code>1+1j</code></td>
-</tr>
-</tbody></table>
-<p>假设AWGN信道下，某码元发送<code>10</code> 数据比特，接收端采用最大似然判决 $y&#x3D;x+n$, $\hat{x}&#x3D;\arg\min_x ||y-x||$ ，采用不同映射，有以下情形：</p>
-<ul>
-<li>自然：对应发送<code>1+1j</code> ，有$P_1$ 的概率被判决为<code>1-1j</code>(即判为<code>11</code>,误比特数1个), $P_1$的 概率被判决为<code>01</code>（误比特2个）,$P_2(P_2&lt;P_1)$ 的概率被判决为<code>00</code>(误比特1个) ，那么平均误比特$3P_1+P_2$ 个</li>
-<li>格雷：对应发送<code>1-1j</code>,$P_1$ 的概率判决为<code>11</code>和<code>00</code>，均误比特<code>1</code>个，$P_2$的概率判为<code>01</code>,误比特$2P_1+2P_2$</li>
-<li>$3P_1+P_2&gt;2P_1+2P_2$</li>
-</ul>
-<p>发送其余数据比特时，情形类似。可以发现AWGN信道下格雷映射方案的<code>BER</code>性能是优于自然映射的。相比于正常二进制映射，使用格雷码可以降低总体错误率。这也是星座映射采用格雷映射的原因。</p>
-<h1 id="格雷码的构造-格雷码"><a href="#格雷码的构造-格雷码" class="headerlink" title="格雷码的构造[^格雷码]"></a>格雷码的构造[^格雷码]</h1><p>我们观察以下 $n$ 维的二进制和其格雷码 $G(n)$。如果 $G(n)$ 的二进制第 $i$ 位为1，仅当 $n$ 的二进制第 $i$ 位为 <code>1</code>,第$i+1$ 位为 $0$ 或者 第$i$ 位为 <code>0</code> ,第 $i+1$ 位为 <code>1</code>。于是可以当成一个异或运算：</p>
-<p>$$G(n)&#x3D;n\oplus \lfloor\frac{n}{2}\rfloor$$</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">g</span><span class="params">(<span class="type">int</span> n)</span> </span>&#123; <span class="keyword">return</span> n ^ (n &gt;&gt; <span class="number">1</span>); &#125;</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-
-
-<h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><ul>
-<li>二维QAM格雷映射基于这样一种思想: 如果每一维是格雷映射的，那么他们的笛卡尔积也是格雷的。即两个gray mapping 的PAM映射组合起来就是QAM gray mapping.</li>
-<li>二维的PSK gray mapping 和一维PAM gray mapping 类似。</li>
-</ul>
-<div class="note info no-icon"><p>点击左侧三角可展开代码</p>
-</div>
-
-
-
-<details>
-<summary>Python 实现</summary>
-
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">qam_constellation</span>(<span class="params">M,normalize=<span class="literal">False</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot; M must be 2^k ,where k is an even integer</span></span><br><span class="line"><span class="string">    gray mapping</span></span><br><span class="line"><span class="string">    param:</span></span><br><span class="line"><span class="string">        - M: the size of qam set</span></span><br><span class="line"><span class="string">        - normalize: normalize the average energy qam symbols unit</span></span><br><span class="line"><span class="string">    return:</span></span><br><span class="line"><span class="string">        1-D numpy array</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">assert</span> np.log2(M).is_integer()</span><br><span class="line">    m = <span class="built_in">int</span>(np.sqrt(M))</span><br><span class="line">    x = np.zeros(m,np.int32) <span class="comment"># gray mapping binding to natural number</span></span><br><span class="line">    y = np.zeros(m,np.int32) </span><br><span class="line">    <span class="comment"># mappping natural number to gray code in octal</span></span><br><span class="line">    natural2gray = <span class="keyword">lambda</span> x: x ^ (x &gt;&gt; <span class="number">1</span>)</span><br><span class="line">    x[natural2gray(np.arange(<span class="number">0</span>, m))] =  np.arange(<span class="number">0</span>, <span class="number">2</span>*m,<span class="number">2</span>) -m+<span class="number">1</span></span><br><span class="line">    y[natural2gray(np.arange(<span class="number">0</span>, m))] =  np.arange(<span class="number">0</span>, <span class="number">2</span>*m,<span class="number">2</span>) -m+<span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    constellation = np.zeros((m, m), dtype=np.cfloat)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(m):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(m):</span><br><span class="line">            constellation[i][j] = (x[i]+<span class="number">1j</span>* y[j])</span><br><span class="line">    <span class="keyword">if</span> normalize:</span><br><span class="line">        <span class="keyword">return</span> constellation.flatten()/(np.linalg.norm(constellation)/m)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> constellation.flatten()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">psk_constellation</span>(<span class="params">M</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot; </span></span><br><span class="line"><span class="string">    gray mapping</span></span><br><span class="line"><span class="string">    param:</span></span><br><span class="line"><span class="string">        - M: the size of psk set</span></span><br><span class="line"><span class="string">        - normalize: normalize the average energy qam symbols unit</span></span><br><span class="line"><span class="string">    return:</span></span><br><span class="line"><span class="string">        1-D numpy array</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    phase = np.arange(<span class="number">0</span>, M) * <span class="number">2</span> * np.pi / M</span><br><span class="line">    constellation = np.zeros(M, dtype=np.cfloat)</span><br><span class="line">    natural2gray = <span class="keyword">lambda</span> x: x ^ (x &gt;&gt; <span class="number">1</span>)</span><br><span class="line">    constellation[natural2gray(np.arange(<span class="number">0</span>, M))] = np.exp(<span class="number">1j</span> * phase)</span><br><span class="line">    <span class="keyword">return</span> constellation</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mapping</span>(<span class="params">data, constellation</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    param:</span></span><br><span class="line"><span class="string">        - data: binary data in 1-D numpy array</span></span><br><span class="line"><span class="string">        - constellation: 1-D numpy array</span></span><br><span class="line"><span class="string">    return:</span></span><br><span class="line"><span class="string">        1-D numpy array</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    M = <span class="built_in">len</span>(constellation)</span><br><span class="line">    <span class="keyword">assert</span> np.log2(M).is_integer()</span><br><span class="line">    <span class="keyword">assert</span> <span class="built_in">len</span>(data) % np.log2(M) == <span class="number">0</span></span><br><span class="line">    data = data.reshape(-<span class="number">1</span>, <span class="built_in">int</span>(np.log2(M)))</span><br><span class="line">    mask = np.array([<span class="number">2</span>**i <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">int</span>(np.log2(M))-<span class="number">1</span>, -<span class="number">1</span>, -<span class="number">1</span>)]) <span class="comment"># [8,4,2,1]</span></span><br><span class="line">    index = np.<span class="built_in">sum</span>(data * mask, axis=<span class="number">1</span>) <span class="comment"># left first</span></span><br><span class="line">    <span class="keyword">return</span> constellation[index]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    qam_16 = qam_constellation(<span class="number">16</span>)</span><br><span class="line">    psk_4 = psk_constellation(<span class="number">4</span>)</span><br><span class="line">    <span class="built_in">print</span>(qam_16)</span><br><span class="line">    <span class="built_in">print</span>(psk_4)</span><br><span class="line">    binary_data = np.random.randint(<span class="number">0</span>, <span class="number">2</span>, <span class="number">128</span>)</span><br><span class="line">    psk_symbols = mapping(binary_data, psk_4)</span><br><span class="line">    qam_symbols = mapping(binary_data, qam_16)</span><br><span class="line">    <span class="built_in">print</span>(psk_symbols)</span><br><span class="line">    <span class="built_in">print</span>(qam_symbols)</span><br></pre></td></tr></table></figure>
-</details>
-
-
-
-<p>[^gray_code]: <span class="exturl" data-url="aHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvR3JheV9jb2Rl">gray code wiki<i class="fa fa-external-link-alt"></i></span><br>[^格雷码]: <span class="exturl" data-url="aHR0cHM6Ly9vaS13aWtpLm9yZy9taXNjL2dyYXktY29kZS8=">格雷码<i class="fa fa-external-link-alt"></i></span></p>
-]]></content>
-      <tags>
-        <tag>通信</tag>
-        <tag>调制</tag>
       </tags>
   </entry>
   <entry>
@@ -928,6 +968,175 @@ Latex 的使用和配置技巧 (二)<i class="fa fa-external-link-alt"></i></spa
       </tags>
   </entry>
   <entry>
+    <title>传递闭包的两种算法实现及比较</title>
+    <url>/2020/03/19/%E4%BC%A0%E9%80%92%E9%97%AD%E5%8C%85%E4%B8%A4%E7%A7%8D%E7%AE%97%E6%B3%95%E6%B1%82%E8%A7%A3%E5%8F%8A%E6%AF%94%E8%BE%83/</url>
+    <content><![CDATA[<ul>
+<li>假设<span class="math inline">\(R\)</span>是定义在集合<span
+class="math inline">\(A\)</span>上的二元关系，<span
+class="math inline">\(S\)</span>是<span
+class="math inline">\(R\)</span>的<span class="exturl" data-url="aHR0cHM6Ly9iYWlrZS5iYWlkdS5jb20vaXRlbS8lRTQlQkMlQTAlRTklODAlOTIlRTklOTclQUQlRTUlOEMlODU=">传递闭包<i class="fa fa-external-link-alt"></i></span>.
+<ul>
+<li>Input：二元关系<span class="math inline">\(R\)</span>的矩阵形式<span
+class="math inline">\(M_R\)</span></li>
+<li>Output: <span class="math inline">\(R\)</span>对应的传递闭包<span
+class="math inline">\(S\)</span>.</li>
+</ul></li>
+</ul>
+<h1 id="传递闭包的定义法1">1.
+传递闭包的定义法<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup></h1>
+<h2 id="原理分析">1.1. 原理分析</h2>
+<p>由传递闭包的定义可得<span class="math inline">\(R^i\subset
+S\)</span>(这里的幂指数<span class="math inline">\(i\)</span>表示<span
+class="math inline">\(i\)</span>个二元关系的合成), 则有</p>
+<p><span class="math display">\[
+\begin{equation}\label{eq1}
+S=\bigcup_{i=1}^{\infty}R^i
+\end{equation}
+\]</span></p>
+<ul>
+<li>我们对<span
+class="math inline">\(\eqref{eq1}\)</span>式继续进行分析，优化可得</li>
+</ul>
+<p><span class="math display">\[
+\begin{equation}
+S=\bigcup_{i=1}^nR^i\qquad\text{n是集合A的基数}\label{eq:2}
+\end{equation}
+\]</span></p>
+<blockquote>
+<p>证明：</p>
+<ul>
+<li>设<span class="math inline">\((x,y)\in
+S\)</span>,则必存在一个最小的正整数<span
+class="math inline">\(p\)</span>使得<span class="math inline">\((x,y)\in
+R^p\)</span>，这就是说存在一个序列<span
+class="math inline">\(x,a_1,a_2,a_3,⋯,a_{p−1},y\)</span></li>
+<li>使得<span class="math inline">\((x,a_1 )\in R,\ (a_1,a_2 )\in R,\
+(a_2,a_3 )\in R,\cdots，(a_{p−1},y)\in R\)</span>,那么<span
+class="math inline">\(a_1\)</span> 到<span
+class="math inline">\(a_{p−1}\)</span>必须互不相同且不同于<span
+class="math inline">\(x\)</span>和<span
+class="math inline">\(y\)</span>，否则关系复合的链条就会缩短，从而与<span
+class="math inline">\(p\)</span>的最小性矛盾</li>
+<li>因此<span class="math inline">\(p\)</span>的最大可能值出现在<span
+class="math inline">\(x=y\)</span>,而<span
+class="math inline">\(p−1=n−1\)</span>,故得证<span
+class="math inline">\(p\le n\)</span>,即<span
+class="math inline">\(S=\bigcup\limits_{i=1}^nR^i\)</span>⁡</li>
+</ul>
+</blockquote>
+<p><span
+class="math inline">\(\eqref{eq:2}\)</span>式用矩阵的形式表示为</p>
+<p><span class="math display">\[
+M_s=M_R\lor M_R^{[2]}\lor M_R^{[3]}\cdots\lor M_{R}^{[n]}
+\]</span></p>
+<p><strong>其中,<span class="math inline">\(M_R^{[i]}\)</span>表示<span
+class="math inline">\(i\)</span>个<span
+class="math inline">\(0-1\)</span>矩阵<span
+class="math inline">\(M_R\)</span>的布尔积</strong></p>
+<h2 id="伪代码">1.2. 伪代码</h2>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">procedure transitive closure</span><br><span class="line">A:=M_R</span><br><span class="line">S:=A</span><br><span class="line">for i:=2 to n</span><br><span class="line">    A:=A*M_R;(这里的*表示逻辑积)</span><br><span class="line">    S:=S V A</span><br><span class="line">return S</span><br></pre></td></tr></table></figure>
+<h2 id="时间复杂度">1.3. 时间复杂度</h2>
+<ul>
+<li>最后一步需要算<span class="math inline">\(n-1\)</span>个<span
+class="math inline">\(M_R^{[i]}\)</span>的并，计算每一个并运算需要使用<span
+class="math inline">\(n^2\)</span>次并运算</li>
+<li>计算布尔幂<span
+class="math inline">\(M_R^{[i]}\)</span>需要求出<span
+class="math inline">\(n-1\)</span>个<span class="math inline">\(n\times
+n\)</span>矩阵的布尔积。计算每个布尔积需要使用<span
+class="math inline">\(n^2(2n-1)\)</span>次位运算。因此此步共需要<span
+class="math inline">\(n^2(2n-1)(n-1)\)</span>次位运算</li>
+<li>总共需要<span
+class="math inline">\(n^2(2n-1)(n-1)+(n-1)n^2=2n^3(n-1)\)</span>，即该算法的时间复杂度为<span
+class="math inline">\(O(n^4)\)</span></li>
+</ul>
+<h2 id="matlab代码">1.4. Matlab代码</h2>
+<p><strong>注</strong>：Matlab可以进行<span class="exturl" data-url="aHR0cHM6Ly93dzIubWF0aHdvcmtzLmNuL2hlbHAvbWF0bGFiL21hdGxhYl9wcm9nL3ZlY3Rvcml6YXRpb24uaHRtbA==">向量化运算<i class="fa fa-external-link-alt"></i></span>，因此实际运行时间会小于<span
+class="math inline">\(O(n^4)\)</span></p>
+<figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line"><span class="comment">% main function </span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Ms</span>=<span class="title">closure</span><span class="params">(Mr)</span></span></span><br><span class="line"><span class="comment">% get the size of Matrix inputed</span></span><br><span class="line">n=<span class="built_in">size</span>(Mr);</span><br><span class="line">temp=<span class="built_in">zeros</span>(n);</span><br><span class="line">Ms=Mr;</span><br><span class="line"><span class="comment">% init</span></span><br><span class="line">Mrk=Mr;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> k=<span class="number">2</span>:n</span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>:n</span><br><span class="line">        <span class="keyword">for</span> <span class="built_in">j</span>=<span class="number">1</span>:n</span><br><span class="line"><span class="comment">%             vectorize to speed up a little</span></span><br><span class="line">            temp(<span class="built_in">i</span>,<span class="built_in">j</span>)=log_sum(Mrk(<span class="built_in">i</span>, : )&amp;Mrk(: ,<span class="built_in">j</span>)&#x27;);</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    Mrk=temp;</span><br><span class="line">    Ms=Ms|Mrk;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ls</span>=<span class="title">log_sum</span><span class="params">(t)</span></span></span><br><span class="line">    nn=<span class="built_in">length</span>(t);</span><br><span class="line">    ls=t(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">2</span>:nn</span><br><span class="line">        ls=ls|t(<span class="built_in">i</span>);</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<h1 id="沃舍尔算法">2. 沃舍尔算法</h1>
+<p>这个算法能够高效地计算某个二元关系的传递闭包</p>
+<h2 id="原理分析-1">2.1. 原理分析</h2>
+<ul>
+<li>其基础是构造一系列的<span
+class="math inline">\(0-1\)</span>矩阵。这些矩阵是<span
+class="math inline">\(W_0,W_1,W_2,\cdots,W_n\)</span>，其中<span
+class="math inline">\(W_0=M_r\)</span>,且<span
+class="math inline">\(W_k=[w_{ij}^{(k)}]\)</span>（此处类似于迭代）。<span
+class="math inline">\(A=\{v_1,v_2,\cdots,v_n\}\)</span>。</li>
+<li>如果存在一条从<span class="math inline">\(v_i\)</span>到<span
+class="math inline">\(v_j\)</span>的路径使得这条路径的内点在集合<span
+class="math inline">\(A\)</span>内（就是找到一个点<span
+class="math inline">\(v_k\)</span>使得<span
+class="math inline">\(w_{ik}=1\)</span>且<span
+class="math inline">\(w_{kj}=1\)</span>，即存在路径<span
+class="math inline">\(v_i\rightarrow v_k\rightarrow
+v_j\)</span>,有点类似与Floyd算法），则记<span
+class="math inline">\(w_{ij}^{(k)}=1\)</span></li>
+<li><span class="math inline">\(W_n\)</span>就是所要求的<span
+class="math inline">\(S\)</span></li>
+<li>以上是大致的思路。</li>
+<li>补充一个引理：</li>
+</ul>
+<blockquote>
+<p>设<span class="math inline">\(W_k=[w_{ij}^{(k)}]\)</span>是<span
+class="math inline">\(0-1\)</span>矩阵，它在<span
+class="math inline">\((i,j)\)</span>位置处取1当且仅当存在一条从<span
+class="math inline">\(v_{i}\)</span>到<span
+class="math inline">\(v_{j}\)</span>的路径，其内部顶点取值集合<span
+class="math inline">\(A\)</span>,数学语言描述为</p>
+<p><span
+class="math display">\[w_{ij}^{(k)}=w_{ij}^{(k-1)}\lor(w_{ik}^{(k-1)}\land
+w_{kj}^{(k-1)})\]</span> 且有<span class="math inline">\(i,j,k\le
+n\)</span></p>
+</blockquote>
+<h2 id="伪代码-1">2.2. 伪代码</h2>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">procedure Warshall</span><br><span class="line">W:=M_R</span><br><span class="line">B:=A</span><br><span class="line">for k:=1 to n</span><br><span class="line">    for i:=1 to n</span><br><span class="line">        for j:=1 to n</span><br><span class="line">        w_&#123;ij&#125;=w_&#123;ij&#125;|(w_&#123;ik&#125;&amp;w_&#123;kj&#125;)</span><br><span class="line">return W</span><br></pre></td></tr></table></figure>
+<h2 id="时间复杂度-1">2.3. 时间复杂度</h2>
+<ul>
+<li>求出一项<span
+class="math inline">\(w_{ij}^{(k)}\)</span>需要两次位运算，从<span
+class="math inline">\(W_{k-1}\)</span>计算<span
+class="math inline">\(W_{k}\)</span>需要<span
+class="math inline">\(2n^2\)</span>次运算</li>
+<li>从<span class="math inline">\(W_0\)</span>计算出<span
+class="math inline">\(W_1,W_2\)</span>一直到<span
+class="math inline">\(W_n\)</span>需要<span
+class="math inline">\(n\)</span>次运算</li>
+<li>则共需<span class="math inline">\(2n^2\times
+n=2n^3\)</span>次运算，时间的复杂度<span
+class="math inline">\(O(n^3)\)</span></li>
+</ul>
+<h2 id="源码">2.4. 源码</h2>
+<figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line"><span class="comment">% main function </span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">W</span>=<span class="title">Warshall</span><span class="params">(Mr)</span></span></span><br><span class="line"><span class="comment">% get the size of Matrix inputed</span></span><br><span class="line">n=<span class="built_in">size</span>(Mr);</span><br><span class="line">temp=<span class="number">0</span>;</span><br><span class="line">W=Mr;</span><br><span class="line"><span class="comment">% init</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> k=<span class="number">1</span>:n</span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>:n</span><br><span class="line">        <span class="keyword">for</span> <span class="built_in">j</span>=<span class="number">1</span>:n             </span><br><span class="line">            temp=W(<span class="built_in">i</span>,<span class="built_in">j</span>)|(W(<span class="built_in">i</span>,k)&amp;W(k,<span class="built_in">j</span>));</span><br><span class="line">            W(<span class="built_in">i</span>,<span class="built_in">j</span>)=temp;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<h1 id="总结">3. 总结</h1>
+<ul>
+<li>就串行运算的话，第二种算法的时间复杂度比第一种低一个量级,算法高效</li>
+<li>但是第一种算法可以进行并行处理，会大大提高速度</li>
+</ul>
+<div id="footnotes">
+<hr>
+<div id="footnotelist">
+<ol style="list-style:none; padding-left: 0;">
+<li id="fn:1">
+<span
+style="display: inline-block; vertical-align: top; padding-right: 10px;">1.</span><span
+style="display: inline-block; vertical-align: top;">离散数学及其应用_第七版。ROSEN著.徐六通等译</span><a href="#fnref:1" rev="footnote">
+↩︎</a>
+</li>
+</ol>
+</div>
+</div>
+]]></content>
+      <categories>
+        <category>math</category>
+      </categories>
+      <tags>
+        <tag>Math</tag>
+        <tag>算法</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>时变多径信道的仿真</title>
     <url>/2021/07/07/multipath/</url>
     <content><![CDATA[<h1 id="仿真要求">1. 仿真要求</h1>
@@ -1145,175 +1354,6 @@ scatterig, US)假设，有</p>
 ]]></content>
       <tags>
         <tag>通信</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>传递闭包的两种算法实现及比较</title>
-    <url>/2020/03/19/%E4%BC%A0%E9%80%92%E9%97%AD%E5%8C%85%E4%B8%A4%E7%A7%8D%E7%AE%97%E6%B3%95%E6%B1%82%E8%A7%A3%E5%8F%8A%E6%AF%94%E8%BE%83/</url>
-    <content><![CDATA[<ul>
-<li>假设<span class="math inline">\(R\)</span>是定义在集合<span
-class="math inline">\(A\)</span>上的二元关系，<span
-class="math inline">\(S\)</span>是<span
-class="math inline">\(R\)</span>的<span class="exturl" data-url="aHR0cHM6Ly9iYWlrZS5iYWlkdS5jb20vaXRlbS8lRTQlQkMlQTAlRTklODAlOTIlRTklOTclQUQlRTUlOEMlODU=">传递闭包<i class="fa fa-external-link-alt"></i></span>.
-<ul>
-<li>Input：二元关系<span class="math inline">\(R\)</span>的矩阵形式<span
-class="math inline">\(M_R\)</span></li>
-<li>Output: <span class="math inline">\(R\)</span>对应的传递闭包<span
-class="math inline">\(S\)</span>.</li>
-</ul></li>
-</ul>
-<h1 id="传递闭包的定义法1">1.
-传递闭包的定义法<sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup></h1>
-<h2 id="原理分析">1.1. 原理分析</h2>
-<p>由传递闭包的定义可得<span class="math inline">\(R^i\subset
-S\)</span>(这里的幂指数<span class="math inline">\(i\)</span>表示<span
-class="math inline">\(i\)</span>个二元关系的合成), 则有</p>
-<p><span class="math display">\[
-\begin{equation}\label{eq1}
-S=\bigcup_{i=1}^{\infty}R^i
-\end{equation}
-\]</span></p>
-<ul>
-<li>我们对<span
-class="math inline">\(\eqref{eq1}\)</span>式继续进行分析，优化可得</li>
-</ul>
-<p><span class="math display">\[
-\begin{equation}
-S=\bigcup_{i=1}^nR^i\qquad\text{n是集合A的基数}\label{eq:2}
-\end{equation}
-\]</span></p>
-<blockquote>
-<p>证明：</p>
-<ul>
-<li>设<span class="math inline">\((x,y)\in
-S\)</span>,则必存在一个最小的正整数<span
-class="math inline">\(p\)</span>使得<span class="math inline">\((x,y)\in
-R^p\)</span>，这就是说存在一个序列<span
-class="math inline">\(x,a_1,a_2,a_3,⋯,a_{p−1},y\)</span></li>
-<li>使得<span class="math inline">\((x,a_1 )\in R,\ (a_1,a_2 )\in R,\
-(a_2,a_3 )\in R,\cdots，(a_{p−1},y)\in R\)</span>,那么<span
-class="math inline">\(a_1\)</span> 到<span
-class="math inline">\(a_{p−1}\)</span>必须互不相同且不同于<span
-class="math inline">\(x\)</span>和<span
-class="math inline">\(y\)</span>，否则关系复合的链条就会缩短，从而与<span
-class="math inline">\(p\)</span>的最小性矛盾</li>
-<li>因此<span class="math inline">\(p\)</span>的最大可能值出现在<span
-class="math inline">\(x=y\)</span>,而<span
-class="math inline">\(p−1=n−1\)</span>,故得证<span
-class="math inline">\(p\le n\)</span>,即<span
-class="math inline">\(S=\bigcup\limits_{i=1}^nR^i\)</span>⁡</li>
-</ul>
-</blockquote>
-<p><span
-class="math inline">\(\eqref{eq:2}\)</span>式用矩阵的形式表示为</p>
-<p><span class="math display">\[
-M_s=M_R\lor M_R^{[2]}\lor M_R^{[3]}\cdots\lor M_{R}^{[n]}
-\]</span></p>
-<p><strong>其中,<span class="math inline">\(M_R^{[i]}\)</span>表示<span
-class="math inline">\(i\)</span>个<span
-class="math inline">\(0-1\)</span>矩阵<span
-class="math inline">\(M_R\)</span>的布尔积</strong></p>
-<h2 id="伪代码">1.2. 伪代码</h2>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">procedure transitive closure</span><br><span class="line">A:=M_R</span><br><span class="line">S:=A</span><br><span class="line">for i:=2 to n</span><br><span class="line">    A:=A*M_R;(这里的*表示逻辑积)</span><br><span class="line">    S:=S V A</span><br><span class="line">return S</span><br></pre></td></tr></table></figure>
-<h2 id="时间复杂度">1.3. 时间复杂度</h2>
-<ul>
-<li>最后一步需要算<span class="math inline">\(n-1\)</span>个<span
-class="math inline">\(M_R^{[i]}\)</span>的并，计算每一个并运算需要使用<span
-class="math inline">\(n^2\)</span>次并运算</li>
-<li>计算布尔幂<span
-class="math inline">\(M_R^{[i]}\)</span>需要求出<span
-class="math inline">\(n-1\)</span>个<span class="math inline">\(n\times
-n\)</span>矩阵的布尔积。计算每个布尔积需要使用<span
-class="math inline">\(n^2(2n-1)\)</span>次位运算。因此此步共需要<span
-class="math inline">\(n^2(2n-1)(n-1)\)</span>次位运算</li>
-<li>总共需要<span
-class="math inline">\(n^2(2n-1)(n-1)+(n-1)n^2=2n^3(n-1)\)</span>，即该算法的时间复杂度为<span
-class="math inline">\(O(n^4)\)</span></li>
-</ul>
-<h2 id="matlab代码">1.4. Matlab代码</h2>
-<p><strong>注</strong>：Matlab可以进行<span class="exturl" data-url="aHR0cHM6Ly93dzIubWF0aHdvcmtzLmNuL2hlbHAvbWF0bGFiL21hdGxhYl9wcm9nL3ZlY3Rvcml6YXRpb24uaHRtbA==">向量化运算<i class="fa fa-external-link-alt"></i></span>，因此实际运行时间会小于<span
-class="math inline">\(O(n^4)\)</span></p>
-<figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line"><span class="comment">% main function </span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Ms</span>=<span class="title">closure</span><span class="params">(Mr)</span></span></span><br><span class="line"><span class="comment">% get the size of Matrix inputed</span></span><br><span class="line">n=<span class="built_in">size</span>(Mr);</span><br><span class="line">temp=<span class="built_in">zeros</span>(n);</span><br><span class="line">Ms=Mr;</span><br><span class="line"><span class="comment">% init</span></span><br><span class="line">Mrk=Mr;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> k=<span class="number">2</span>:n</span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>:n</span><br><span class="line">        <span class="keyword">for</span> <span class="built_in">j</span>=<span class="number">1</span>:n</span><br><span class="line"><span class="comment">%             vectorize to speed up a little</span></span><br><span class="line">            temp(<span class="built_in">i</span>,<span class="built_in">j</span>)=log_sum(Mrk(<span class="built_in">i</span>, : )&amp;Mrk(: ,<span class="built_in">j</span>)&#x27;);</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    Mrk=temp;</span><br><span class="line">    Ms=Ms|Mrk;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">ls</span>=<span class="title">log_sum</span><span class="params">(t)</span></span></span><br><span class="line">    nn=<span class="built_in">length</span>(t);</span><br><span class="line">    ls=t(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">2</span>:nn</span><br><span class="line">        ls=ls|t(<span class="built_in">i</span>);</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
-<h1 id="沃舍尔算法">2. 沃舍尔算法</h1>
-<p>这个算法能够高效地计算某个二元关系的传递闭包</p>
-<h2 id="原理分析-1">2.1. 原理分析</h2>
-<ul>
-<li>其基础是构造一系列的<span
-class="math inline">\(0-1\)</span>矩阵。这些矩阵是<span
-class="math inline">\(W_0,W_1,W_2,\cdots,W_n\)</span>，其中<span
-class="math inline">\(W_0=M_r\)</span>,且<span
-class="math inline">\(W_k=[w_{ij}^{(k)}]\)</span>（此处类似于迭代）。<span
-class="math inline">\(A=\{v_1,v_2,\cdots,v_n\}\)</span>。</li>
-<li>如果存在一条从<span class="math inline">\(v_i\)</span>到<span
-class="math inline">\(v_j\)</span>的路径使得这条路径的内点在集合<span
-class="math inline">\(A\)</span>内（就是找到一个点<span
-class="math inline">\(v_k\)</span>使得<span
-class="math inline">\(w_{ik}=1\)</span>且<span
-class="math inline">\(w_{kj}=1\)</span>，即存在路径<span
-class="math inline">\(v_i\rightarrow v_k\rightarrow
-v_j\)</span>,有点类似与Floyd算法），则记<span
-class="math inline">\(w_{ij}^{(k)}=1\)</span></li>
-<li><span class="math inline">\(W_n\)</span>就是所要求的<span
-class="math inline">\(S\)</span></li>
-<li>以上是大致的思路。</li>
-<li>补充一个引理：</li>
-</ul>
-<blockquote>
-<p>设<span class="math inline">\(W_k=[w_{ij}^{(k)}]\)</span>是<span
-class="math inline">\(0-1\)</span>矩阵，它在<span
-class="math inline">\((i,j)\)</span>位置处取1当且仅当存在一条从<span
-class="math inline">\(v_{i}\)</span>到<span
-class="math inline">\(v_{j}\)</span>的路径，其内部顶点取值集合<span
-class="math inline">\(A\)</span>,数学语言描述为</p>
-<p><span
-class="math display">\[w_{ij}^{(k)}=w_{ij}^{(k-1)}\lor(w_{ik}^{(k-1)}\land
-w_{kj}^{(k-1)})\]</span> 且有<span class="math inline">\(i,j,k\le
-n\)</span></p>
-</blockquote>
-<h2 id="伪代码-1">2.2. 伪代码</h2>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">procedure Warshall</span><br><span class="line">W:=M_R</span><br><span class="line">B:=A</span><br><span class="line">for k:=1 to n</span><br><span class="line">    for i:=1 to n</span><br><span class="line">        for j:=1 to n</span><br><span class="line">        w_&#123;ij&#125;=w_&#123;ij&#125;|(w_&#123;ik&#125;&amp;w_&#123;kj&#125;)</span><br><span class="line">return W</span><br></pre></td></tr></table></figure>
-<h2 id="时间复杂度-1">2.3. 时间复杂度</h2>
-<ul>
-<li>求出一项<span
-class="math inline">\(w_{ij}^{(k)}\)</span>需要两次位运算，从<span
-class="math inline">\(W_{k-1}\)</span>计算<span
-class="math inline">\(W_{k}\)</span>需要<span
-class="math inline">\(2n^2\)</span>次运算</li>
-<li>从<span class="math inline">\(W_0\)</span>计算出<span
-class="math inline">\(W_1,W_2\)</span>一直到<span
-class="math inline">\(W_n\)</span>需要<span
-class="math inline">\(n\)</span>次运算</li>
-<li>则共需<span class="math inline">\(2n^2\times
-n=2n^3\)</span>次运算，时间的复杂度<span
-class="math inline">\(O(n^3)\)</span></li>
-</ul>
-<h2 id="源码">2.4. 源码</h2>
-<figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line"><span class="comment">% main function </span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">W</span>=<span class="title">Warshall</span><span class="params">(Mr)</span></span></span><br><span class="line"><span class="comment">% get the size of Matrix inputed</span></span><br><span class="line">n=<span class="built_in">size</span>(Mr);</span><br><span class="line">temp=<span class="number">0</span>;</span><br><span class="line">W=Mr;</span><br><span class="line"><span class="comment">% init</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> k=<span class="number">1</span>:n</span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>:n</span><br><span class="line">        <span class="keyword">for</span> <span class="built_in">j</span>=<span class="number">1</span>:n             </span><br><span class="line">            temp=W(<span class="built_in">i</span>,<span class="built_in">j</span>)|(W(<span class="built_in">i</span>,k)&amp;W(k,<span class="built_in">j</span>));</span><br><span class="line">            W(<span class="built_in">i</span>,<span class="built_in">j</span>)=temp;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
-<h1 id="总结">3. 总结</h1>
-<ul>
-<li>就串行运算的话，第二种算法的时间复杂度比第一种低一个量级,算法高效</li>
-<li>但是第一种算法可以进行并行处理，会大大提高速度</li>
-</ul>
-<div id="footnotes">
-<hr>
-<div id="footnotelist">
-<ol style="list-style:none; padding-left: 0;">
-<li id="fn:1">
-<span
-style="display: inline-block; vertical-align: top; padding-right: 10px;">1.</span><span
-style="display: inline-block; vertical-align: top;">离散数学及其应用_第七版。ROSEN著.徐六通等译</span><a href="#fnref:1" rev="footnote">
-↩︎</a>
-</li>
-</ol>
-</div>
-</div>
-]]></content>
-      <categories>
-        <category>math</category>
-      </categories>
-      <tags>
-        <tag>Math</tag>
-        <tag>算法</tag>
       </tags>
   </entry>
 </search>
